@@ -1,17 +1,13 @@
 import "dotenv/config";
 import express from "express";
 import jobRouter from "./routes/jobRouter.js";
-import nunjucks from "nunjucks";
-import path from "path";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
 // Health check
 app.get("/health", (req, res) => {
-  res.json({ status: "OK", timestamp: new Date().toISOString() });
+  res.json({ status: "UP", time: new Date().toISOString() });
 });
 
 // Route requests through jobRouter.
