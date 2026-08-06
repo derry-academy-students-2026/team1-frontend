@@ -1,38 +1,40 @@
 {
-  "name": "team1-frontend",
-  "version": "1.0.0",
-  "type": "module",
-  "description": "Team1 Frontend",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\",",
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "lint": "echo \"Temporary: no lint specified\"",
-    "ci": "echo \"Temporary: no ci specified\""
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/derry-academy-students-2026/team1-frontend.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/derry-academy-students-2026/team1-frontend/issues"
-  },
-  "homepage": "https://github.com/derry-academy-students-2026/team1-frontend#readme",
-  "dependencies": {
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "nunjucks": "^3.2.4"
-  },
-  "devDependencies": {
-    "@types/express": "^5.0.6",
-    "@types/node": "^26.1.2",
-    "@types/nunjucks": "^3.2.6",
-    "tsx": "^4.23.7",
-    "typescript": "^7.0.2"
-  }
+	"name": "team1-frontend",
+	"version": "1.0.0",
+	"type": "module",
+	"description": "Team1 Frontend",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\",",
+		"dev": "tsx watch src/index.ts",
+		"build": "tsc",
+		"start": "node dist/index.js",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"ci": "echo \"Temporary: no ci specified\""
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/derry-academy-students-2026/team1-frontend.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/derry-academy-students-2026/team1-frontend/issues"
+	},
+	"homepage": "https://github.com/derry-academy-students-2026/team1-frontend#readme",
+	"dependencies": {
+		"dotenv": "^17.4.2",
+		"express": "^5.2.1",
+		"nunjucks": "^3.2.4"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.5.7",
+		"@types/express": "^5.0.6",
+		"@types/node": "^26.1.2",
+		"@types/nunjucks": "^3.2.6",
+		"tsx": "^4.23.7",
+		"typescript": "^7.0.2"
+	}
 }
