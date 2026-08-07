@@ -4,6 +4,9 @@
 		"enabled": true,
 		"indentStyle": "tab"
 	},
+	"files": {
+		"includes": ["**", "!coverage", "!dist", "!build"]
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {
