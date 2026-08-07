@@ -22,6 +22,7 @@ app.get("/health", (_req, res) => {
 // Route requests through jobRouter.
 app.use("/", jobRouter);
 Logger.info("Job routes mounted at /");
+Logger.error("This is a test error log to verify logging functionality");
 
 // Start the server
 app.listen(PORT, () => {
