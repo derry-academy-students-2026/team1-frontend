@@ -5,9 +5,9 @@
 	"description": "Team1 Frontend",
 	"main": "index.js",
 	"scripts": {
-		"test": "vitest run",
-		"test:ui": "vitest --ui",
-		"test:coverage": "vitest run --coverage",
+		"test": "vitest run --dir tests",
+		"test:ui": "vitest --ui --dir tests",
+		"test:coverage": "vitest run --dir tests --coverage --coverage.include=src/**/*.ts --coverage.exclude=src/index.ts --coverage.reporter=text --coverage.reporter=html",
 		"dev": "tsx watch src/index.ts",
 		"build": "tsc",
 		"start": "node dist/index.js",
