@@ -1,3 +1,4 @@
+import { mkdirSync } from "node:fs";
 import winston from "winston";
 
 const levels = {
@@ -25,7 +26,7 @@ const level = () => {
 };
 
 const format = winston.format.combine(
-	winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:ms" }),
+	winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:SSS" }),
 	winston.format.colorize({ all: true }),
 	winston.format.printf(
 		(info) => `[${info.timestamp}] [${info.level}]: ${info.message}`,
