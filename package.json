@@ -29,11 +29,14 @@
 	"dependencies": {
 		"dotenv": "^17.4.2",
 		"express": "^5.2.1",
-		"nunjucks": "^3.2.4"
+		"morgan": "^1.11.0",
+		"nunjucks": "^3.2.4",
+		"winston": "^3.19.0"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.7",
 		"@types/express": "^5.0.6",
+		"@types/morgan": "^1.9.10",
 		"@types/node": "^26.1.2",
 		"@types/nunjucks": "^3.2.6",
 		"@vitest/coverage-v8": "^4.1.10",
