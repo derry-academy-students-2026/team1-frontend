@@ -3,11 +3,9 @@ import {
 	getHome,
 	JobRoleController,
 } from "../controllers/jobRoleController.js";
-import { JobRoleService } from "../services/jobRoleService.js";
 
 const router = Router();
-const service = new JobRoleService();
-const controller = new JobRoleController(service);
+const controller = new JobRoleController();
 
 /**
  * Route for the home page.

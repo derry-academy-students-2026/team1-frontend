@@ -1,9 +1,9 @@
 import type { Request, Response } from "express";
 import Logger from "../lib/logger.js";
-import type { JobRoleService } from "../services/jobRoleService.js";
+import * as jobRoleApiService from "../services/jobRoleApiService.js";
 
 export class JobRoleController {
-	constructor(private readonly jobRoleService: JobRoleService) {}
+	constructor(private readonly jobRoleService = jobRoleApiService) {}
 
 	/**
 	 * Handles GET /job-roles by retrieving roles from the service
@@ -11,20 +11,34 @@ export class JobRoleController {
 	 *
 	 * @returns Renders job-role-list.html with job roles.
 	 */
-	getJobRoles(_req: Request, res: Response) {
-		const jobRoles = this.jobRoleService.getJobRoles();
-		const jobRolesForView = jobRoles.map((jobRole) => ({
-			...jobRole,
-			closingDate: jobRole.closingDate.toLocaleDateString("en-GB", {
-				day: "2-digit",
-				month: "numeric",
-				year: "numeric",
-			}),
-		}));
-		Logger.info(
-			`Rendering job roles page with ${jobRolesForView.length} roles`,
-		);
-		res.render("job-role-list.html", { jobRoles: jobRolesForView });
+	async getJobRoles(_req: Request, res: Response) {
+		try {
+			const jobRoles = await this.jobRoleService.getJobRoles();
+
+			const jobRolesForView = jobRoles.map((jobRole) => {
+				const dateValue =
+					jobRole.closingDate instanceof Date
+						? jobRole.closingDate
+						: new Date(jobRole.closingDate);
+
+				return {
+					...jobRole,
+					closingDate: dateValue.toLocaleDateString("en-GB", {
+						day: "2-digit",
+						month: "numeric",
+						year: "numeric",
+					}),
+				};
+			});
+			Logger.info(
+				`Rendering job roles page with ${jobRolesForView.length} roles`,
+			);
+			res.render("job-role-list.html", { jobRoles: jobRolesForView });
+		} catch (error) {
+			const message = error instanceof Error ? error.message : "Unknown error";
+			Logger.error(`Failed to load job roles: ${message}`);
+			res.status(500).send("Unable to load job roles");
+		}
 	}
 }
 

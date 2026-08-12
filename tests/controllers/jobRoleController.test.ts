@@ -24,7 +24,7 @@ describe("getHome", () => {
 });
 
 describe("JobRoleController", () => {
-	it("renders job-role-list.html with roles", () => {
+	it("renders job-role-list.html with roles", async () => {
 		const jobRoles = [
 			{
 				id: 1,
@@ -43,7 +43,7 @@ describe("JobRoleController", () => {
 		const render = vi.fn();
 		const response = { render } as unknown as Response;
 
-		controller.getJobRoles({} as Request, response);
+		await controller.getJobRoles({} as Request, response);
 
 		expect(mockService.getJobRoles).toHaveBeenCalledTimes(1);
 		expect(render).toHaveBeenCalledWith("job-role-list.html", {
@@ -56,7 +56,7 @@ describe("JobRoleController", () => {
 		});
 	});
 
-	it("throws when service getJobRoles fails", () => {
+	it("returns 500 when service getJobRoles fails", async () => {
 		const testError = new Error("Service failed");
 		mockService.getJobRoles = vi.fn(() => {
 			throw testError;
@@ -64,11 +64,14 @@ describe("JobRoleController", () => {
 
 		const controller = new JobRoleController(mockService);
 		const render = vi.fn();
-		const response = { render } as unknown as Response;
+		const send = vi.fn();
+		const status = vi.fn().mockReturnValue({ send });
+		const response = { render, status } as unknown as Response;
 
-		expect(() => controller.getJobRoles({} as Request, response)).toThrow(
-			"Service failed",
-		);
+		await controller.getJobRoles({} as Request, response);
+
+		expect(status).toHaveBeenCalledWith(500);
+		expect(send).toHaveBeenCalledWith("Unable to load job roles");
 		expect(render).not.toHaveBeenCalled();
 	});
 });

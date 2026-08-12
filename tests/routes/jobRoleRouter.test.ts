@@ -1,5 +1,20 @@
 import request from "supertest";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("../../src/services/jobRoleApiService.js", () => ({
+	getJobRoles: vi.fn(async () => [
+		{
+			id: 1,
+			roleName: "Software Engineer",
+			location: "Belfast",
+			capability: "Engineering",
+			band: "Band 2",
+			closingDate: "2026-08-30",
+			status: "open",
+		},
+	]),
+}));
+
 import app from "../../src/app.js";
 
 describe("GET /job-roles", () => {
