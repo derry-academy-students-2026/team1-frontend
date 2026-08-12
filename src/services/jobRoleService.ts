@@ -1,4 +1,3 @@
-import { DatabaseSync } from "node:sqlite";
 import Logger from "../lib/logger.js";
 
 interface JobRole {

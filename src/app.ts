@@ -44,6 +44,5 @@ app.get("/health", (_req, res) => {
 // Route requests through jobRoleRouter.
 app.use("/", jobRoleRouter);
 Logger.info("Job routes mounted at /");
-Logger.error("This is a test error log to verify logging functionality");
 
 export default app;

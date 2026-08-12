@@ -3,8 +3,11 @@ import Logger from "../lib/logger.js";
 import * as jobRoleApiService from "../services/jobRoleApiService.js";
 
 export class JobRoleController {
+	/**
+	 * Initializes the controller with a job role service dependency.
+	 * @param jobRoleService - Service instance for fetching job roles (injectable for testing)
+	 */
 	constructor(private readonly jobRoleService = jobRoleApiService) {}
-
 	/**
 	 * Handles GET /job-roles by retrieving roles from the service
 	 * and rendering the job roles list page with formatted dates.
@@ -42,6 +45,10 @@ export class JobRoleController {
 	}
 }
 
+/**
+ * Handles GET / by rendering the homepage.
+ * @returns Sends static home page HTML.
+ */
 export function getHome(_req: Request, res: Response) {
 	res.send("<!doctype html><html><body><h1>Hello world</h1></body></html>");
 }

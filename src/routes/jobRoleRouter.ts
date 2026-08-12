@@ -13,7 +13,7 @@ const controller = new JobRoleController();
 router.get("/", getHome);
 
 /**
-	 * Route for retrieving job roles and rendering the job roles list page.
+ * Route for retrieving job roles and rendering the job roles list page.
  */
 router.get("/job-roles", (req, res) => controller.getJobRoles(req, res));
 

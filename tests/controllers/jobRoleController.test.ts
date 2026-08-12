@@ -1,14 +1,12 @@
 import type { Request, Response } from "express";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	getHome,
 	JobRoleController,
 } from "../../src/controllers/jobRoleController.js";
-import type { JobRoleService } from "../../src/services/jobRoleService.js";
+import * as jobRoleApiService from "../../src/services/jobRoleApiService.js";
 
-const mockService = {
-	getJobRoles: vi.fn(),
-} as unknown as JobRoleService;
+vi.mock("../../src/services/jobRoleApiService.js");
 
 describe("getHome", () => {
 	it("sends the homepage markup", () => {
@@ -24,28 +22,32 @@ describe("getHome", () => {
 });
 
 describe("JobRoleController", () => {
-	it("renders job-role-list.html with roles", async () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	it("renders job-role-list.html with roles from Prisma API", async () => {
 		const jobRoles = [
 			{
 				id: 1,
 				roleName: "Software Engineer",
 				location: "Belfast",
-				capability: "Engineering",
-				band: "Band 2",
+				capability: { id: 1, name: "Engineering" },
+				band: { id: 2, name: "Band 2" },
 				closingDate: new Date("2026-08-30"),
 				status: "open",
 			},
 		];
 
-		mockService.getJobRoles = vi.fn().mockReturnValue(jobRoles);
+		vi.mocked(jobRoleApiService.getJobRoles).mockResolvedValue(jobRoles);
 
-		const controller = new JobRoleController(mockService);
+		const controller = new JobRoleController();
 		const render = vi.fn();
 		const response = { render } as unknown as Response;
 
 		await controller.getJobRoles({} as Request, response);
 
-		expect(mockService.getJobRoles).toHaveBeenCalledTimes(1);
+		expect(jobRoleApiService.getJobRoles).toHaveBeenCalledTimes(1);
 		expect(render).toHaveBeenCalledWith("job-role-list.html", {
 			jobRoles: [
 				{
@@ -56,13 +58,63 @@ describe("JobRoleController", () => {
 		});
 	});
 
-	it("returns 500 when service getJobRoles fails", async () => {
-		const testError = new Error("Service failed");
-		mockService.getJobRoles = vi.fn(() => {
-			throw testError;
-		});
+	it("handles date conversion from Prisma API string format", async () => {
+		const jobRoles = [
+			{
+				id: 1,
+				roleName: "Test Role",
+				location: "London",
+				capability: { id: 4, name: "Testing" },
+				band: { id: 1, name: "Band 1" },
+				closingDate: new Date("2026-12-25"),
+				status: "open",
+			},
+		];
 
-		const controller = new JobRoleController(mockService);
+		vi.mocked(jobRoleApiService.getJobRoles).mockResolvedValue(jobRoles);
+
+		const controller = new JobRoleController();
+		const render = vi.fn();
+		const response = { render } as unknown as Response;
+
+		await controller.getJobRoles({} as Request, response);
+
+		const callArgs = render.mock.calls[0];
+		expect(callArgs[0]).toBe("job-role-list.html");
+		expect(callArgs[1].jobRoles[0].closingDate).toBe("25/12/2026");
+	});
+
+	it("converts string date to Date object when closingDate is not a Date instance", async () => {
+		// Tests the branch: new Date(jobRole.closingDate) when closingDate is a string
+		const jobRoles = [
+			{
+				id: 2,
+				roleName: "API String Date Test",
+				location: "Dublin",
+				capability: { id: 5, name: "DevOps" },
+				band: { id: 3, name: "Band 3" },
+				closingDate: "2026-10-15" as unknown as Date, // Simulate API returning string
+				status: "open",
+			},
+		];
+
+		vi.mocked(jobRoleApiService.getJobRoles).mockResolvedValue(jobRoles);
+
+		const controller = new JobRoleController();
+		const render = vi.fn();
+		const response = { render } as unknown as Response;
+
+		await controller.getJobRoles({} as Request, response);
+
+		const callArgs = render.mock.calls[0];
+		expect(callArgs[1].jobRoles[0].closingDate).toBe("15/10/2026");
+	});
+
+	it("returns 500 when API fails", async () => {
+		const testError = new Error("Backend API failed");
+		vi.mocked(jobRoleApiService.getJobRoles).mockRejectedValue(testError);
+
+		const controller = new JobRoleController();
 		const render = vi.fn();
 		const send = vi.fn();
 		const status = vi.fn().mockReturnValue({ send });
