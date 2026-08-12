@@ -1,0 +1,128 @@
+:root {
+	--brand-blue: #003a70;
+	--brand-navy: #0d2f4f;
+	--brand-teal: #10b7c4;
+	--ink: #17212b;
+	--muted: #5d6b79;
+	--surface: #ffffff;
+	--surface-soft: #f6f8fa;
+	--border: #d8e0e8;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	font-family: "Segoe UI", "Avenir Next", Arial, sans-serif;
+	color: var(--ink);
+	background: #f2f4f7;
+}
+
+.hero {
+	background: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
+	color: var(--ink);
+	padding: 2rem 1.25rem 1.8rem;
+	border-bottom: 1px solid var(--border);
+}
+
+.hero__content {
+	max-width: 960px;
+	margin: 0 auto;
+}
+
+.hero__eyebrow {
+	margin: 0 0 0.5rem 0;
+	font-size: 0.8rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--brand-blue);
+	font-weight: 700;
+}
+
+.hero h1 {
+	margin: 0;
+	font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+	color: var(--brand-navy);
+}
+
+.hero__subtitle {
+	margin: 0.6rem 0 0;
+	color: var(--muted);
+	max-width: 48ch;
+}
+
+.page-content {
+	max-width: 960px;
+	margin: 1.2rem auto 2rem;
+	padding: 0 1.25rem;
+}
+
+.card {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-top: 3px solid var(--brand-blue);
+	border-radius: 12px;
+	padding: 1rem 1rem 0.8rem;
+	box-shadow: 0 4px 18px rgba(16, 24, 40, 0.06);
+}
+
+.card h2 {
+	margin: 0 0 0.8rem;
+	font-size: 1.15rem;
+}
+
+.table-wrap {
+	overflow-x: auto;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.95rem;
+}
+
+thead {
+	background: var(--surface-soft);
+}
+
+th,
+td {
+	text-align: left;
+	padding: 0.75rem;
+	border-bottom: 1px solid var(--border);
+}
+
+th {
+	font-weight: 600;
+	color: var(--brand-navy);
+}
+
+tbody tr:hover {
+	background: #fafcfd;
+}
+
+.empty-state {
+	margin: 0;
+	padding: 0.8rem;
+	border: 1px dashed var(--border);
+	border-radius: 8px;
+	color: var(--muted);
+	background: #fbfdff;
+}
+
+@media (max-width: 640px) {
+	.hero {
+		padding: 2rem 1rem;
+	}
+
+	.page-content {
+		padding: 0 1rem;
+	}
+
+	th,
+	td {
+		padding: 0.6rem;
+	}
+}
