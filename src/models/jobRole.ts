@@ -1,11 +1,13 @@
+import { Band } from "./band";
+import { Capability } from "./capability";
+
 export interface JobRole {
 	id: number;
-    jobRoleName: string;
+    roleName: string;
     location: string;
-    capability: string;
-    band: string;
-    closingDate: string;
-    status: JobRoleStatus;
+    capability: Capability;
+    band: Band;
+    closingDate: Date;
+    status: string;
 }
 
-export type JobRoleStatus = "open" | "closed";

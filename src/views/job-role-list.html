@@ -10,7 +10,7 @@
 	<header class="hero">
 		<div class="hero__content">
 			<p class="hero__eyebrow">Kainos Careers</p>
-			<h1>Open Job Roles</h1>
+			<h1>Job Roles</h1>
 			<p class="hero__subtitle">Explore opportunities across capability teams at Kainos.</p>
 		</div>
 	</header>
@@ -34,7 +34,7 @@
 						<tbody>
 							{% for jobRole in jobRoles %}
 								<tr>
-									<td>{{ jobRole.jobRoleName }}</td>
+									<td>{{ jobRole.roleName }}</td>
 									<td>{{ jobRole.location }}</td>
 									<td>{{ jobRole.capability }}</td>
 									<td>{{ jobRole.band }}</td>
@@ -45,7 +45,7 @@
 					</table>
 				</div>
 			{% else %}
-				<p class="empty-state">No open job roles found.</p>
+				<p class="empty-state">No job roles found.</p>
 			{% endif %}
 		</section>
 	</main>

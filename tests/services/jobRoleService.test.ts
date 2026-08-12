@@ -1,6 +1,15 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import type { JobRole } from "../../src/services/jobRoleService.js";
 import { JobRoleService } from "../../src/services/jobRoleService.js";
+
+interface TestJobRole {
+	id: number;
+	roleName: string;
+	location: string;
+	capability: string;
+	band: string;
+	closingDate: Date;
+	status: string;
+}
 
 describe("JobRoleService", () => {
 	let service: JobRoleService;
@@ -9,53 +18,38 @@ describe("JobRoleService", () => {
 		service = new JobRoleService();
 	});
 
-	it("should return only open job roles", () => {
-		const openJobRoles = service.getOpenJobRoles();
-		expect(openJobRoles.length).toBeGreaterThan(0);
-		expect(openJobRoles.every((jobRole) => jobRole.status === "open")).toBe(
-			true,
-		);
+	it("should return all job roles", () => {
+		const jobRoles = service.getJobRoles();
+		expect(jobRoles.length).toBeGreaterThan(0);
 	});
 
-	it("should exclude closed job roles", () => {
-		const openJobRoles = service.getOpenJobRoles();
-		const hasClosedRole = openJobRoles.some(
-			(jobRole) => jobRole.status === "closed",
-		);
+	it("should include both open and closed roles when present", () => {
+		const jobRoles = service.getJobRoles();
+		const hasOpenRole = jobRoles.some((jobRole) => jobRole.status === "open");
+		const hasClosedRole = jobRoles.some((jobRole) => jobRole.status === "closed");
 
-		expect(hasClosedRole).toBe(false);
+		expect(hasOpenRole).toBe(true);
+		expect(hasClosedRole).toBe(true);
 	});
 
 	it("should return job roles with the expected fields", () => {
-		const openJobRoles = service.getOpenJobRoles();
+		const jobRoles = service.getJobRoles();
 
-		expect(openJobRoles[0]).toMatchObject({
+		expect(jobRoles[0]).toMatchObject({
 			id: expect.any(Number),
-			jobRoleName: expect.any(String),
+			roleName: expect.any(String),
 			location: expect.any(String),
 			capability: expect.any(String),
 			band: expect.any(String),
-			closingDate: expect.any(String),
-			status: "open",
+			closingDate: expect.any(Date),
+			status: expect.any(String),
 		});
 	});
 
-	it("should return an empty array if there are no open job roles", () => {
-		const closedRolesOnly: JobRole[] = [
-			{
-				id: 10,
-				jobRoleName: "Business Analyst",
-				location: "Belfast",
-				capability: "Consulting",
-				band: "Band 2",
-				closingDate: "2026-10-01",
-				status: "closed",
-			},
-		];
+	it("should return an empty array if there are no job roles", () => {
+		(service as unknown as { jobRoles: TestJobRole[] }).jobRoles = [];
 
-		(service as unknown as { jobRoles: JobRole[] }).jobRoles = closedRolesOnly;
-
-		const openJobRoles = service.getOpenJobRoles();
-		expect(openJobRoles).toHaveLength(0);
+		const jobRoles = service.getJobRoles();
+		expect(jobRoles).toHaveLength(0);
 	});
 });

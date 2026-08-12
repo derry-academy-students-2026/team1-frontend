@@ -1,67 +1,59 @@
-export type JobRoleStatus = "open" | "closed";
-
+import { DatabaseSync } from "node:sqlite";
 import Logger from "../lib/logger.js";
 
-export interface JobRole {
+interface JobRole {
 	id: number;
-	jobRoleName: string;
+	roleName: string;
 	location: string;
 	capability: string;
 	band: string;
-	closingDate: string;
-	status: JobRoleStatus;
+	closingDate: Date;
+	status: string;
 }
 
 export class JobRoleService {
 	private readonly jobRoles: JobRole[] = [
 		{
 			id: 1,
-			jobRoleName: "Software Engineer",
+			roleName: "Software Engineer",
 			location: "Belfast",
 			capability: "Engineering",
 			band: "Band 2",
-			closingDate: "2026-08-30",
+			closingDate: new Date("2026-08-30"),
 			status: "open",
 		},
 		{
 			id: 2,
-			jobRoleName: "Product Manager",
+			roleName: "Product Manager",
 			location: "Dublin",
 			capability: "Product",
 			band: "Band 3",
-			closingDate: "2026-09-05",
+			closingDate: new Date("2026-09-05"),
 			status: "closed",
 		},
 		{
 			id: 3,
-			jobRoleName: "QA Engineer",
+			roleName: "QA Engineer",
 			location: "London",
 			capability: "Quality Assurance",
 			band: "Band 2",
-			closingDate: "2026-09-12",
+			closingDate: new Date("2026-09-12"),
 			status: "open",
 		},
 	];
 
 	/**
-	 * Returns only job roles that are currently open.
-	 * This enforces the ticket acceptance criteria for the job roles list page.
+	 * Returns all available job roles from the current data source.
 	 *
-	 * @returns An array of job roles with status "open".
+	 * @returns An array of job roles.
 	 */
-	getOpenJobRoles(): JobRole[] {
-		const openRoles = this.jobRoles.filter(
-			(jobRole) => jobRole.status === "open",
-		);
-
-		if (openRoles.length === 0) {
-			Logger.warn("No open job roles found in JobRoleService");
+	getJobRoles(): JobRole[] {
+		if (this.jobRoles.length === 0) {
+			Logger.warn("No job roles found in JobRoleService");
 		} else {
-			Logger.debug(
-				`JobRoleService returned ${openRoles.length} open job roles`,
-			);
+			Logger.debug(`JobRoleService returned ${this.jobRoles.length} job roles`);
 		}
 
-		return openRoles;
+		return this.jobRoles;
 	}
 }

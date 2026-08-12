@@ -7,7 +7,7 @@ import {
 import type { JobRoleService } from "../../src/services/jobRoleService.js";
 
 const mockService = {
-	getOpenJobRoles: vi.fn(),
+	getJobRoles: vi.fn(),
 } as unknown as JobRoleService;
 
 describe("getHome", () => {
@@ -24,20 +24,20 @@ describe("getHome", () => {
 });
 
 describe("JobRoleController", () => {
-	it("renders job-role-list.html with open roles", () => {
-		const openJobRoles = [
+	it("renders job-role-list.html with roles", () => {
+		const jobRoles = [
 			{
 				id: 1,
-				jobRoleName: "Software Engineer",
+				roleName: "Software Engineer",
 				location: "Belfast",
 				capability: "Engineering",
 				band: "Band 2",
-				closingDate: "2026-08-30",
-				status: "open" as const,
+				closingDate: new Date("2026-08-30"),
+				status: "open",
 			},
 		];
 
-		mockService.getOpenJobRoles = vi.fn().mockReturnValue(openJobRoles);
+		mockService.getJobRoles = vi.fn().mockReturnValue(jobRoles);
 
 		const controller = new JobRoleController(mockService);
 		const render = vi.fn();
@@ -45,15 +45,20 @@ describe("JobRoleController", () => {
 
 		controller.getJobRoles({} as Request, response);
 
-		expect(mockService.getOpenJobRoles).toHaveBeenCalledTimes(1);
+		expect(mockService.getJobRoles).toHaveBeenCalledTimes(1);
 		expect(render).toHaveBeenCalledWith("job-role-list.html", {
-			jobRoles: openJobRoles,
+			jobRoles: [
+				{
+					...jobRoles[0],
+					closingDate: "30/8/2026",
+				},
+			],
 		});
 	});
 
-	it("throws when service getOpenJobRoles fails", () => {
+	it("throws when service getJobRoles fails", () => {
 		const testError = new Error("Service failed");
-		mockService.getOpenJobRoles = vi.fn(() => {
+		mockService.getJobRoles = vi.fn(() => {
 			throw testError;
 		});
 

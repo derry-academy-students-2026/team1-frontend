@@ -6,17 +6,25 @@ export class JobRoleController {
 	constructor(private readonly jobRoleService: JobRoleService) {}
 
 	/**
-	 * Handles GET /job-roles by retrieving open roles from the service
-	 * and rendering the job roles list page.
+	 * Handles GET /job-roles by retrieving roles from the service
+	 * and rendering the job roles list page with formatted dates.
 	 *
-	 * @returns Renders job-role-list.html with open job roles.
+	 * @returns Renders job-role-list.html with job roles.
 	 */
 	getJobRoles(_req: Request, res: Response) {
-		const openJobRoles = this.jobRoleService.getOpenJobRoles();
+		const jobRoles = this.jobRoleService.getJobRoles();
+		const jobRolesForView = jobRoles.map((jobRole) => ({
+			...jobRole,
+			closingDate: jobRole.closingDate.toLocaleDateString("en-GB", {
+				day: "2-digit",
+				month: "numeric",
+				year: "numeric",
+			}),
+		}));
 		Logger.info(
-			`Rendering job roles page with ${openJobRoles.length} open roles`,
+			`Rendering job roles page with ${jobRolesForView.length} roles`,
 		);
-		res.render("job-role-list.html", { jobRoles: openJobRoles });
+		res.render("job-role-list.html", { jobRoles: jobRolesForView });
 	}
 }
 
