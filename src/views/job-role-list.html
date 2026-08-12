@@ -29,6 +29,7 @@
 								<th>Capability</th>
 								<th>Band</th>
 								<th>Closing Date</th>
+								<th>Status</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -36,9 +37,10 @@
 								<tr>
 									<td>{{ jobRole.roleName }}</td>
 									<td>{{ jobRole.location }}</td>
-									<td>{{ jobRole.capability }}</td>
-									<td>{{ jobRole.band }}</td>
+									<td>{{ jobRole.capability.name }}</td>
+									<td>{{ jobRole.band.name }}</td>
 									<td>{{ jobRole.closingDate }}</td>
+                                    <td>{{ jobRole.status }}</td>
 								</tr>
 							{% endfor %}
 						</tbody>
