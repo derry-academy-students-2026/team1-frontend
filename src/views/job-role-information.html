@@ -18,43 +18,63 @@
 		</div>
 	</header>
 
-	<main class="page-content">
-		<article class="card">
-			<section aria-labelledby="description-heading">
+	<main class="page-content page-content--detail">
+		<nav class="breadcrumb" aria-label="Breadcrumb">
+			<ol class="breadcrumb__list">
+				<li><a href="/job-roles">Job roles</a></li>
+				<li aria-current="page">{{ jobRole.roleName }}</li>
+			</ol>
+		</nav>
+
+		<article class="card job-role-detail">
+			<p class="job-role-detail__back"><a href="/job-roles">Back to job roles</a></p>
+			<div class="job-role-detail__content">
+				<section class="job-role-detail__section" aria-labelledby="description-heading">
 				<h2 id="description-heading">Description</h2>
 				<p>{{ jobRole.description }}</p>
 			</section>
 
-			<section aria-labelledby="responsibilities-heading">
+			<section class="job-role-detail__section" aria-labelledby="responsibilities-heading">
 				<h2 id="responsibilities-heading">Responsibilities</h2>
 				<p>{{ jobRole.responsibilities }}</p>
 			</section>
+			</div>
 
-			<p>
+			<p class="job-role-detail__specification">
 				<a href="{{ jobRole.sharepointUrl }}" target="_blank" rel="noopener noreferrer">
-					View job specification
+					View job specification <span class="visually-hidden">(opens in a new tab)</span>
 				</a>
 			</p>
 
-			<section aria-labelledby="role-information-heading">
+			<section class="job-role-detail__information" aria-labelledby="role-information-heading">
 				<h2 id="role-information-heading">Role information</h2>
-				<dl>
-					<dt>Location</dt>
-					<dd>{{ jobRole.location }}</dd>
-					<dt>Capability</dt>
-					<dd>{{ jobRole.capability.name }}</dd>
-					<dt>Band</dt>
-					<dd>{{ jobRole.band.name }}</dd>
-					<dt>Closing date</dt>
-					<dd>{{ jobRole.closingDate }}</dd>
-					<dt>Status</dt>
-					<dd>{{ jobRole.status.name }}</dd>
-					<dt>Number of open positions</dt>
-					<dd>{{ jobRole.numberOfOpenPositions }}</dd>
+				<dl class="job-role-detail__facts">
+					<div class="job-role-detail__fact">
+						<dt>Location</dt>
+						<dd>{{ jobRole.location }}</dd>
+					</div>
+					<div class="job-role-detail__fact">
+						<dt>Capability</dt>
+						<dd>{{ jobRole.capability.name }}</dd>
+					</div>
+					<div class="job-role-detail__fact">
+						<dt>Band</dt>
+						<dd>{{ jobRole.band.name }}</dd>
+					</div>
+					<div class="job-role-detail__fact">
+						<dt>Closing date</dt>
+						<dd>{{ jobRole.closingDate }}</dd>
+					</div>
+					<div class="job-role-detail__fact">
+						<dt>Status</dt>
+						<dd>{{ jobRole.status.name }}</dd>
+					</div>
+					<div class="job-role-detail__fact">
+						<dt>Number of open positions</dt>
+						<dd>{{ jobRole.numberOfOpenPositions }}</dd>
+					</div>
 				</dl>
 			</section>
-
-			<p><a href="/job-roles">Back to job roles</a></p>
 		</article>
 	</main>
 
