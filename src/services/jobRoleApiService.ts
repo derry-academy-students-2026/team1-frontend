@@ -29,6 +29,13 @@ export async function getJobRoles(): Promise<JobRole[]> {
 	}
 }
 
+/**
+ * Fetches a single job role by ID from the backend Prisma API.
+ * Handles various error scenarios with appropriate logging and re-throws for caller handling.
+ * @param id - The numeric ID of the job role to fetch.
+ * @returns Promise resolving to a JobRole object from Prisma database.
+ * @throws {AxiosError} If API request fails (404, 500, or network error).
+ */
 export async function getJobRoleById(id: number): Promise<JobRole> {
 	try {
 		const response = await apiClient.get<JobRole>(`/job-roles/${id}`);
