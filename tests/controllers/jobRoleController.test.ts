@@ -24,7 +24,7 @@ describe("JobRoleController", () => {
 		vi.clearAllMocks();
 	});
 
-	it("renders job-role-list.html with roles from Prisma API", async () => {
+	it("renders job-role-list.njk with roles from Prisma API", async () => {
 		const jobRoles = [
 			{
 				id: 1,
@@ -50,7 +50,7 @@ describe("JobRoleController", () => {
 		await controller.getJobRoles({} as Request, response);
 
 		expect(jobRoleApiService.getJobRoles).toHaveBeenCalledTimes(1);
-		expect(render).toHaveBeenCalledWith("job-role-list.html", {
+		expect(render).toHaveBeenCalledWith("job-role-list.njk", {
 			jobRoles: [
 				{
 					...jobRoles[0],
@@ -86,7 +86,7 @@ describe("JobRoleController", () => {
 		await controller.getJobRoles({} as Request, response);
 
 		const callArgs = render.mock.calls[0];
-		expect(callArgs[0]).toBe("job-role-list.html");
+		expect(callArgs[0]).toBe("job-role-list.njk");
 		expect(callArgs[1].jobRoles[0].closingDate).toBe("25/12/2026");
 	});
 

@@ -12,7 +12,7 @@ export class JobRoleController {
 	 * Handles GET /job-roles by retrieving roles from the service
 	 * and rendering the job roles list page with formatted dates.
 	 *
-	 * @returns Renders job-role-list.html with job roles.
+	 * @returns Renders job-role-list.njk with job roles.
 	 */
 	async getJobRoles(_req: Request, res: Response) {
 		try {
@@ -36,7 +36,7 @@ export class JobRoleController {
 			Logger.info(
 				`Rendering job roles page with ${jobRolesForView.length} roles`,
 			);
-			res.render("job-role-list.html", { jobRoles: jobRolesForView });
+			res.render("job-role-list.njk", { jobRoles: jobRolesForView });
 		} catch (error) {
 			const message = error instanceof Error ? error.message : "Unknown error";
 			Logger.error(`Failed to load job roles: ${message}`);

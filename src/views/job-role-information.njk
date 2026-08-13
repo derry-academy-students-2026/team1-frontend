@@ -1,23 +1,12 @@
-<!doctype html>
-<html lang="en">
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>{{ jobRole.roleName }} | Kainos careers</title>
-	<link rel="icon" type="image/png" href="/assets/images/kainos-favicon.png" />
-	<link rel="stylesheet" href="/assets/styles/job-role-list.css" />
-</head>
-<body>
-	<header class="hero">
-		<div class="hero__content">
-			<a class="site-logo" href="/" aria-label="Kainos home">
-				<img src="/assets/images/kainos-logo-alt-transparent.png" alt="Kainos" />
-			</a>
-			<p class="hero__eyebrow">Kainos Careers</p>
-			<h1>{{ jobRole.roleName }}</h1>
-		</div>
-	</header>
+{% extends "base.njk" %}
 
+{% block title %}{{ jobRole.roleName }} | Kainos careers{% endblock %}
+
+{% block hero %}
+	<h1>{{ jobRole.roleName }}</h1>
+{% endblock %}
+
+{% block content %}
 	<main class="page-content page-content--detail">
 		<nav class="breadcrumb" aria-label="Breadcrumb">
 			<ol class="breadcrumb__list">
@@ -30,14 +19,14 @@
 			<p class="job-role-detail__back"><a href="/job-roles">Back to job roles</a></p>
 			<div class="job-role-detail__content">
 				<section class="job-role-detail__section" aria-labelledby="description-heading">
-				<h2 id="description-heading">Description</h2>
-				<p>{{ jobRole.description }}</p>
-			</section>
+					<h2 id="description-heading">Description</h2>
+					<p>{{ jobRole.description }}</p>
+				</section>
 
-			<section class="job-role-detail__section" aria-labelledby="responsibilities-heading">
-				<h2 id="responsibilities-heading">Responsibilities</h2>
-				<p>{{ jobRole.responsibilities }}</p>
-			</section>
+				<section class="job-role-detail__section" aria-labelledby="responsibilities-heading">
+					<h2 id="responsibilities-heading">Responsibilities</h2>
+					<p>{{ jobRole.responsibilities }}</p>
+				</section>
 			</div>
 
 			<p class="job-role-detail__specification">
@@ -77,19 +66,5 @@
 			</section>
 		</article>
 	</main>
+{% endblock %}
 
-	<footer class="site-footer">
-		<div class="site-footer__inner">
-			<div>
-				<strong>Kainos</strong>
-				<p>Technology that makes a difference.</p>
-			</div>
-			<div>
-				<h2>Contact</h2>
-				<p><a href="mailto:careers@kainos.com">careers@kainos.com</a></p>
-				<p><a href="tel:+442890367000">+44 (0)28 9036 7000</a></p>
-			</div>
-		</div>
-	</footer>
-</body>
-</html>
