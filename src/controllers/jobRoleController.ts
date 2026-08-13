@@ -44,6 +44,14 @@ export class JobRoleController {
 		}
 	}
 
+	/**
+	 * Handles GET /job-roles/:id by retrieving a single job role from the service
+	 * and rendering the job role information page with formatted dates.
+	 *
+	 * @param req - Express request object containing the job role ID in params
+	 * @param res - Express response object for sending the rendered view or error
+	 * @returns Renders job-role-information.njk with the job role data or sends a 404/500 error response
+	 */
 	async getJobRole(req: Request, res: Response) {
 		const id = Number(req.params.id);
 
