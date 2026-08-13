@@ -50,5 +50,5 @@ export class JobRoleController {
  * @returns Sends static home page HTML.
  */
 export function getHome(_req: Request, res: Response) {
-	res.send("<!doctype html><html><body><h1>Hello world</h1></body></html>");
+	res.render("index.html");
 }

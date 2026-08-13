@@ -4,24 +4,29 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>Job Roles</title>
+	<link rel="icon" type="image/png" href="/assets/images/kainos-favicon.png" />
 	<link rel="stylesheet" href="/assets/styles/job-role-list.css" />
 </head>
 <body>
 	<header class="hero">
 		<div class="hero__content">
+			<a class="site-logo" href="/" aria-label="Kainos home">
+				<img src="/assets/images/kainos-logo-alt-transparent.png" alt="Kainos" />
+			</a>
 			<p class="hero__eyebrow">Kainos Careers</p>
-			<h1>Job Roles</h1>
+			<h1>Job roles</h1>
 			<p class="hero__subtitle">Explore opportunities across capability teams at Kainos.</p>
 		</div>
 	</header>
 
 	<main class="page-content">
 		<section class="card">
-			<h2>Current Openings</h2>
+			<h2>Current openings</h2>
 
 			{% if jobRoles.length > 0 %}
 				<div class="table-wrap">
 					<table>
+						<caption class="visually-hidden">Current Kainos job role openings</caption>
 						<thead>
 							<tr>
 								<th>Job Role Name</th>
@@ -51,5 +56,19 @@
 			{% endif %}
 		</section>
 	</main>
+
+	<footer class="site-footer">
+		<div class="site-footer__inner">
+			<div>
+				<strong>Kainos</strong>
+				<p>Technology that makes a difference.</p>
+			</div>
+			<div>
+				<h2>Contact</h2>
+				<p><a href="mailto:careers@kainos.com">careers@kainos.com</a></p>
+				<p><a href="tel:+442890367000">+44 (0)28 9036 7000</a></p>
+			</div>
+		</div>
+	</footer>
 </body>
 </html>

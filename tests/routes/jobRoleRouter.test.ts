@@ -86,6 +86,7 @@ describe("GET /", () => {
 		const response = await request(app).get("/");
 
 		expect(response.status).toBe(200);
-		expect(response.text).toContain("Hello world");
+		expect(response.text).toContain("Make a difference with technology");
+		expect(response.text).toContain("careers@kainos.com");
 	});
 });

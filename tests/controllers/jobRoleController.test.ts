@@ -9,15 +9,13 @@ import * as jobRoleApiService from "../../src/services/jobRoleApiService.js";
 vi.mock("../../src/services/jobRoleApiService.js");
 
 describe("getHome", () => {
-	it("sends the homepage markup", () => {
-		const send = vi.fn();
-		const response = { send } as unknown as Response;
+	it("renders the homepage view", () => {
+		const render = vi.fn();
+		const response = { render } as unknown as Response;
 
 		getHome({} as never, response);
 
-		expect(send).toHaveBeenCalledWith(
-			"<!doctype html><html><body><h1>Hello world</h1></body></html>",
-		);
+		expect(render).toHaveBeenCalledWith("index.html");
 	});
 });
 
