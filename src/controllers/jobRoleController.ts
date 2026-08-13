@@ -5,9 +5,9 @@ import * as jobRoleApiService from "../services/jobRoleApiService.js";
 export class JobRoleController {
 	/**
 	 * Initializes the controller with a job role service dependency.
-	 * @param jobRoleService - Service instance for fetching job roles (injectable for testing)
+	 * @param jobApiRoleService - Service instance for fetching job roles (injectable for testing)
 	 */
-	constructor(private readonly jobRoleService = jobRoleApiService) {}
+	constructor(private readonly jobApiRoleService = jobRoleApiService) {}
 	/**
 	 * Handles GET /job-roles by retrieving roles from the service
 	 * and rendering the job roles list page with formatted dates.
@@ -16,7 +16,7 @@ export class JobRoleController {
 	 */
 	async getJobRoles(_req: Request, res: Response) {
 		try {
-			const jobRoles = await this.jobRoleService.getJobRoles();
+			const jobRoles = await this.jobApiRoleService.getJobRoles();
 
 			const jobRolesForView = jobRoles.map((jobRole) => {
 				const dateValue =
@@ -53,7 +53,7 @@ export class JobRoleController {
 		}
 
 		try {
-			const jobRole = await this.jobRoleService.getJobRoleById(id);
+			const jobRole = await this.jobApiRoleService.getJobRoleById(id);
 			const dateValue =
 				jobRole.closingDate instanceof Date
 					? jobRole.closingDate
