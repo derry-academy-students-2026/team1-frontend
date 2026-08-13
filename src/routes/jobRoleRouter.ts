@@ -17,9 +17,7 @@ router.get("/", getHome);
  */
 router.get("/job-roles", (req, res) => controller.getJobRoles(req, res));
 
-/**
- * Route for retrieving one job role and rendering its information page.
- */
+// Route for retrieving one job role and rendering its information page.
 router.get("/job-roles/:id", (req, res) => controller.getJobRole(req, res));
 
 export default router;
