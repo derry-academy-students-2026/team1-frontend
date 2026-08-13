@@ -43,6 +43,47 @@ export class JobRoleController {
 			res.status(500).send("Unable to load job roles");
 		}
 	}
+
+	async getJobRole(req: Request, res: Response) {
+		const id = Number(req.params.id);
+
+		if (!Number.isInteger(id) || id <= 0) {
+			res.status(404).send("Job role not found");
+			return;
+		}
+
+		try {
+			const jobRole = await this.jobRoleService.getJobRoleById(id);
+			const dateValue =
+				jobRole.closingDate instanceof Date
+					? jobRole.closingDate
+					: new Date(jobRole.closingDate);
+
+			res.render("job-role-information.html", {
+				jobRole: {
+					...jobRole,
+					closingDate: dateValue.toLocaleDateString("en-GB", {
+						day: "2-digit",
+						month: "numeric",
+						year: "numeric",
+					}),
+				},
+			});
+		} catch (error) {
+			const status = (error as { response?: { status?: number } }).response
+				?.status;
+			const message = error instanceof Error ? error.message : "Unknown error";
+
+			if (status === 404) {
+				Logger.error(`Job role ${id} not found: ${message}`);
+				res.status(404).send("Job role not found");
+				return;
+			}
+
+			Logger.error(`Failed to load job role ${id}: ${message}`);
+			res.status(500).send("Unable to load job role");
+		}
+	}
 }
 
 /**

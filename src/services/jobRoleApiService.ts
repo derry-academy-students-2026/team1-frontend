@@ -28,3 +28,23 @@ export async function getJobRoles(): Promise<JobRole[]> {
 		throw error; // Rethrow the error if it's not an AxiosError
 	}
 }
+
+export async function getJobRoleById(id: number): Promise<JobRole> {
+	try {
+		const response = await apiClient.get<JobRole>(`/job-roles/${id}`);
+		return response.data;
+	} catch (error) {
+		if (axios.isAxiosError(error)) {
+			const status = error.response?.status;
+			if (status === 404) {
+				logger.error(`Job role ${id} not found (404)`);
+			} else if (status === 500) {
+				logger.error(`Server error while fetching job role ${id} (500)`);
+			} else {
+				logger.error(`Unexpected error: ${error.message}`);
+			}
+			throw error;
+		}
+		throw error;
+	}
+}

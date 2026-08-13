@@ -1,4 +1,5 @@
 import Logger from "../lib/logger.js";
+import type { Status } from "../models/status.js";
 
 interface JobRole {
 	id: number;
@@ -7,7 +8,7 @@ interface JobRole {
 	capability: string;
 	band: string;
 	closingDate: Date;
-	status: string;
+	status: Status;
 }
 
 export class JobRoleService {
@@ -19,7 +20,7 @@ export class JobRoleService {
 			capability: "Engineering",
 			band: "Band 2",
 			closingDate: new Date("2026-08-30"),
-			status: "open",
+			status: { id: 1, name: "open" },
 		},
 		{
 			id: 2,
@@ -28,7 +29,7 @@ export class JobRoleService {
 			capability: "Product",
 			band: "Band 3",
 			closingDate: new Date("2026-09-05"),
-			status: "closed",
+			status: { id: 2, name: "closed" },
 		},
 		{
 			id: 3,
@@ -37,7 +38,7 @@ export class JobRoleService {
 			capability: "Quality Assurance",
 			band: "Band 2",
 			closingDate: new Date("2026-09-12"),
-			status: "open",
+			status: { id: 1, name: "open" },
 		},
 	];
 

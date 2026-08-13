@@ -40,12 +40,12 @@
 						<tbody>
 							{% for jobRole in jobRoles %}
 								<tr>
-									<td>{{ jobRole.roleName }}</td>
+									<td><a href="/job-roles/{{ jobRole.id }}">{{ jobRole.roleName }}</a></td>
 									<td>{{ jobRole.location }}</td>
 									<td>{{ jobRole.capability.name }}</td>
 									<td>{{ jobRole.band.name }}</td>
 									<td>{{ jobRole.closingDate }}</td>
-                                    <td>{{ jobRole.status }}</td>
+									<td>{{ jobRole.status.name }}</td>
 								</tr>
 							{% endfor %}
 						</tbody>

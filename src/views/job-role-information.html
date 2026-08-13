@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>{{ jobRole.roleName }} | Kainos careers</title>
+	<link rel="icon" type="image/png" href="/assets/images/kainos-favicon.png" />
+	<link rel="stylesheet" href="/assets/styles/job-role-list.css" />
+</head>
+<body>
+	<header class="hero">
+		<div class="hero__content">
+			<a class="site-logo" href="/" aria-label="Kainos home">
+				<img src="/assets/images/kainos-logo-alt-transparent.png" alt="Kainos" />
+			</a>
+			<p class="hero__eyebrow">Kainos Careers</p>
+			<h1>{{ jobRole.roleName }}</h1>
+		</div>
+	</header>
+
+	<main class="page-content">
+		<article class="card">
+			<section aria-labelledby="description-heading">
+				<h2 id="description-heading">Description</h2>
+				<p>{{ jobRole.description }}</p>
+			</section>
+
+			<section aria-labelledby="responsibilities-heading">
+				<h2 id="responsibilities-heading">Responsibilities</h2>
+				<p>{{ jobRole.responsibilities }}</p>
+			</section>
+
+			<p>
+				<a href="{{ jobRole.sharepointUrl }}" target="_blank" rel="noopener noreferrer">
+					View job specification
+				</a>
+			</p>
+
+			<section aria-labelledby="role-information-heading">
+				<h2 id="role-information-heading">Role information</h2>
+				<dl>
+					<dt>Location</dt>
+					<dd>{{ jobRole.location }}</dd>
+					<dt>Capability</dt>
+					<dd>{{ jobRole.capability.name }}</dd>
+					<dt>Band</dt>
+					<dd>{{ jobRole.band.name }}</dd>
+					<dt>Closing date</dt>
+					<dd>{{ jobRole.closingDate }}</dd>
+					<dt>Status</dt>
+					<dd>{{ jobRole.status.name }}</dd>
+					<dt>Number of open positions</dt>
+					<dd>{{ jobRole.numberOfOpenPositions }}</dd>
+				</dl>
+			</section>
+
+			<p><a href="/job-roles">Back to job roles</a></p>
+		</article>
+	</main>
+
+	<footer class="site-footer">
+		<div class="site-footer__inner">
+			<div>
+				<strong>Kainos</strong>
+				<p>Technology that makes a difference.</p>
+			</div>
+			<div>
+				<h2>Contact</h2>
+				<p><a href="mailto:careers@kainos.com">careers@kainos.com</a></p>
+				<p><a href="tel:+442890367000">+44 (0)28 9036 7000</a></p>
+			</div>
+		</div>
+	</footer>
+</body>
+</html>

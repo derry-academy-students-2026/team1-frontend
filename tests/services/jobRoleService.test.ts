@@ -7,20 +7,28 @@ describe("JobRoleApiService", () => {
 		{
 			id: 1,
 			roleName: "Software Engineer",
+			description: "Build software products.",
+			responsibilities: "Design, build and test software.",
+			sharepointUrl: "https://sharepoint.example.com/software-engineer",
 			location: "Belfast",
 			capability: { id: 1, name: "Engineering" },
 			band: { id: 2, name: "Band 2" },
 			closingDate: new Date("2026-08-30"),
-			status: "open",
+			status: { id: 1, name: "open" },
+			numberOfOpenPositions: 2,
 		},
 		{
 			id: 2,
 			roleName: "Product Manager",
+			description: "Lead product delivery.",
+			responsibilities: "Plan and deliver product improvements.",
+			sharepointUrl: "https://sharepoint.example.com/product-manager",
 			location: "Dublin",
 			capability: { id: 3, name: "Product" },
 			band: { id: 3, name: "Band 3" },
 			closingDate: new Date("2026-09-05"),
-			status: "closed",
+			status: { id: 2, name: "closed" },
+			numberOfOpenPositions: 1,
 		},
 	];
 
@@ -66,7 +74,10 @@ describe("JobRoleApiService", () => {
 				name: expect.any(String),
 			}),
 			closingDate: expect.any(Date),
-			status: expect.any(String),
+			status: expect.objectContaining({
+				id: expect.any(Number),
+				name: expect.any(String),
+			}),
 		});
 	});
 

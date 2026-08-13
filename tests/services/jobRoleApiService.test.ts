@@ -3,7 +3,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import apiClient from "../../src/config/apiClient.js";
 import logger from "../../src/lib/logger.js";
 import type { JobRole } from "../../src/models/jobRole.js";
-import { getJobRoles } from "../../src/services/jobRoleApiService.js";
+import {
+	getJobRoleById,
+	getJobRoles,
+} from "../../src/services/jobRoleApiService.js";
 
 vi.mock("../../src/config/apiClient.js");
 vi.mock("../../src/lib/logger.js");
@@ -13,20 +16,28 @@ describe("JobRoleApiService", () => {
 		{
 			id: 1,
 			roleName: "Software Engineer",
+			description: "Build software products.",
+			responsibilities: "Design, build and test software.",
+			sharepointUrl: "https://sharepoint.example.com/software-engineer",
 			location: "Belfast",
 			capability: { id: 1, name: "Engineering" },
 			band: { id: 2, name: "Band 2" },
 			closingDate: new Date("2026-08-30"),
-			status: "open",
+			status: { id: 1, name: "open" },
+			numberOfOpenPositions: 2,
 		},
 		{
 			id: 2,
 			roleName: "Product Manager",
+			description: "Lead product delivery.",
+			responsibilities: "Plan and deliver product improvements.",
+			sharepointUrl: "https://sharepoint.example.com/product-manager",
 			location: "Dublin",
 			capability: { id: 3, name: "Product" },
 			band: { id: 3, name: "Band 3" },
 			closingDate: new Date("2026-09-05"),
-			status: "closed",
+			status: { id: 2, name: "closed" },
+			numberOfOpenPositions: 1,
 		},
 	];
 
@@ -164,7 +175,10 @@ describe("JobRoleApiService", () => {
 					name: expect.any(String),
 				}),
 				closingDate: expect.any(Date),
-				status: expect.any(String),
+				status: expect.objectContaining({
+					id: expect.any(Number),
+					name: expect.any(String),
+				}),
 			});
 		});
 
@@ -245,6 +259,32 @@ describe("JobRoleApiService", () => {
 			await expect(getJobRoles()).rejects.toThrow("timeout of 5000ms exceeded");
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.stringContaining("Unexpected error"),
+			);
+		});
+	});
+
+	describe("getJobRoleById", () => {
+		it("should fetch one job role from the backend API", async () => {
+			vi.mocked(apiClient.get).mockResolvedValue({
+				data: mockJobRoles[0],
+				status: 200,
+				statusText: "OK",
+				headers: {},
+				config: {} as never,
+			});
+
+			const result = await getJobRoleById(1);
+
+			expect(apiClient.get).toHaveBeenCalledWith("/job-roles/1");
+			expect(result).toEqual(mockJobRoles[0]);
+		});
+
+		it("should rethrow errors when fetching one job role fails", async () => {
+			const error = new Error("Failed to fetch job role");
+			vi.mocked(apiClient.get).mockRejectedValue(error);
+
+			await expect(getJobRoleById(1)).rejects.toThrow(
+				"Failed to fetch job role",
 			);
 		});
 	});
