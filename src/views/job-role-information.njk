@@ -1,0 +1,70 @@
+{% extends "base.njk" %}
+
+{% block title %}{{ jobRole.roleName }} | Kainos careers{% endblock %}
+
+{% block hero %}
+	<h1>{{ jobRole.roleName }}</h1>
+{% endblock %}
+
+{% block content %}
+	<main class="page-content page-content--detail">
+		<nav class="breadcrumb" aria-label="Breadcrumb">
+			<ol class="breadcrumb__list">
+				<li><a href="/job-roles">Job roles</a></li>
+				<li aria-current="page">{{ jobRole.roleName }}</li>
+			</ol>
+		</nav>
+
+		<article class="card job-role-detail">
+			<p class="job-role-detail__back"><a href="/job-roles">Back to job roles</a></p>
+			<div class="job-role-detail__content">
+				<section class="job-role-detail__section" aria-labelledby="description-heading">
+					<h2 id="description-heading">Description</h2>
+					<p>{{ jobRole.description }}</p>
+				</section>
+
+				<section class="job-role-detail__section" aria-labelledby="responsibilities-heading">
+					<h2 id="responsibilities-heading">Responsibilities</h2>
+					<p>{{ jobRole.responsibilities }}</p>
+				</section>
+			</div>
+
+			<p class="job-role-detail__specification">
+				<a href="{{ jobRole.sharepointUrl }}" target="_blank" rel="noopener noreferrer">
+					View job specification <span class="visually-hidden">(opens in a new tab)</span>
+				</a>
+			</p>
+
+			<section class="job-role-detail__information" aria-labelledby="role-information-heading">
+				<h2 id="role-information-heading">Role information</h2>
+				<dl class="job-role-detail__facts">
+					<div class="job-role-detail__fact">
+						<dt>Location</dt>
+						<dd>{{ jobRole.location }}</dd>
+					</div>
+					<div class="job-role-detail__fact">
+						<dt>Capability</dt>
+						<dd>{{ jobRole.capability.name }}</dd>
+					</div>
+					<div class="job-role-detail__fact">
+						<dt>Band</dt>
+						<dd>{{ jobRole.band.name }}</dd>
+					</div>
+					<div class="job-role-detail__fact">
+						<dt>Closing date</dt>
+						<dd>{{ jobRole.closingDate }}</dd>
+					</div>
+					<div class="job-role-detail__fact">
+						<dt>Status</dt>
+						<dd>{{ jobRole.status.name }}</dd>
+					</div>
+					<div class="job-role-detail__fact">
+						<dt>Number of open positions</dt>
+						<dd>{{ jobRole.numberOfOpenPositions }}</dd>
+					</div>
+				</dl>
+			</section>
+		</article>
+	</main>
+{% endblock %}
+

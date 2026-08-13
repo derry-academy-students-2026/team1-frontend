@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../../src/services/jobRoleApiService.js", () => ({
 	getJobRoles: vi.fn(),
+	getJobRoleById: vi.fn(),
 }));
 
 import app from "../../src/app.js";
@@ -13,20 +14,28 @@ const mockPrismaJobRoles: JobRole[] = [
 	{
 		id: 1,
 		roleName: "Software Engineer",
+		description: "Build software products.",
+		responsibilities: "Design, build and test software.",
+		sharepointUrl: "https://sharepoint.example.com/software-engineer",
 		location: "Belfast",
 		capability: { id: 1, name: "Engineering" },
 		band: { id: 2, name: "Band 2" },
 		closingDate: new Date("2026-08-30"),
-		status: "open",
+		status: { id: 1, name: "open" },
+		numberOfOpenPositions: 2,
 	},
 	{
 		id: 2,
 		roleName: "QA Engineer",
+		description: "Improve software quality.",
+		responsibilities: "Plan and execute tests.",
+		sharepointUrl: "https://sharepoint.example.com/qa-engineer",
 		location: "London",
 		capability: { id: 2, name: "Quality Assurance" },
 		band: { id: 2, name: "Band 2" },
 		closingDate: new Date("2026-09-12"),
-		status: "open",
+		status: { id: 1, name: "open" },
+		numberOfOpenPositions: 1,
 	},
 ];
 
@@ -45,6 +54,7 @@ describe("GET /job-roles", () => {
 		expect(response.status).toBe(200);
 		expect(response.text).toContain("Software Engineer");
 		expect(response.text).toContain("Belfast");
+		expect(response.text).toContain('href="/job-roles/1"');
 	});
 
 	it("should render HTML with formatted dates from Prisma data", async () => {
@@ -78,6 +88,37 @@ describe("GET /job-roles", () => {
 		expect(response.status).toBe(200);
 		expect(response.text).toContain("Software Engineer");
 		expect(response.text).toContain("QA Engineer");
+	});
+});
+
+describe("GET /job-roles/:id", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	it("should render the job role information page", async () => {
+		vi.mocked(jobRoleApiService.getJobRoleById).mockResolvedValue(
+			mockPrismaJobRoles[0],
+		);
+
+		const response = await request(app).get("/job-roles/1");
+
+		expect(response.status).toBe(200);
+		expect(response.text).toContain("Software Engineer");
+		expect(response.text).toContain("Build software products.");
+		expect(response.text).toContain("View job specification");
+		expect(jobRoleApiService.getJobRoleById).toHaveBeenCalledWith(1);
+	});
+
+	it("should return 404 when the job role does not exist", async () => {
+		vi.mocked(jobRoleApiService.getJobRoleById).mockRejectedValue({
+			response: { status: 404 },
+		});
+
+		const response = await request(app).get("/job-roles/999");
+
+		expect(response.status).toBe(404);
+		expect(response.text).toContain("Job role not found");
 	});
 });
 

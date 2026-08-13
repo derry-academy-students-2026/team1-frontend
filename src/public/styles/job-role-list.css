@@ -183,6 +183,127 @@ tbody tr:hover {
 	background: var(--surface-soft);
 }
 
+.page-content--detail {
+	max-width: 1120px;
+	display: block;
+}
+
+.job-role-detail {
+	padding: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.breadcrumb {
+	margin: 0 0 1.25rem;
+}
+
+.breadcrumb__list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.breadcrumb__list li + li::before {
+	color: var(--kainos-grey);
+	content: "/";
+	margin-right: 0.5rem;
+}
+
+.page-content--detail .breadcrumb__list a,
+.page-content--detail .job-role-detail__back a {
+	color: var(--kainos-blue);
+	font-weight: 700;
+}
+
+.job-role-detail__back {
+	margin: 0 0 2rem;
+}
+
+.job-role-detail__back a::before {
+	content: "< ";
+}
+
+.job-role-detail__content {
+	max-width: 68ch;
+}
+
+.job-role-detail__section + .job-role-detail__section {
+	border-top: 1px solid var(--border);
+	margin-top: 2rem;
+	padding-top: 2rem;
+}
+
+.job-role-detail__section h2,
+.job-role-detail__information h2 {
+	font-size: clamp(1.35rem, 2vw, 1.65rem);
+}
+
+.job-role-detail__section p {
+	margin: 0;
+	white-space: pre-line;
+}
+
+.job-role-detail__specification {
+	margin: 2rem 0;
+}
+
+.page-content--detail .job-role-detail__specification a {
+	background: var(--kainos-blue);
+	border: 2px solid var(--kainos-blue);
+	border-radius: 4px;
+	color: var(--kainos-white);
+	display: inline-block;
+	font-weight: 700;
+	padding: 0.75rem 1.1rem;
+	text-decoration: none;
+}
+
+.page-content--detail .job-role-detail__specification a:hover {
+	background: var(--kainos-dark-green);
+	border-color: var(--kainos-dark-green);
+	text-decoration: underline;
+}
+
+.job-role-detail__information {
+	border-top: 1px solid var(--border);
+	padding-top: 2rem;
+}
+
+.job-role-detail__facts {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	margin: 0;
+}
+
+.job-role-detail__fact {
+	border-bottom: 1px solid var(--border);
+	padding: 1rem 1.25rem;
+}
+
+.job-role-detail__fact:nth-child(odd) {
+	border-right: 1px solid var(--border);
+	padding-left: 0;
+}
+
+.job-role-detail__fact:nth-child(even) {
+	padding-right: 0;
+}
+
+.job-role-detail__fact dt {
+	color: var(--kainos-grey);
+	font-size: 0.9rem;
+	font-weight: 700;
+	margin-bottom: 0.25rem;
+}
+
+.job-role-detail__fact dd {
+	font-size: 1.1rem;
+	font-weight: 700;
+	margin: 0;
+}
+
 .visually-hidden {
 	position: absolute;
 	width: 1px;
@@ -305,5 +426,30 @@ footer.site-footer a {
 	th,
 	td {
 		padding: 0.6rem;
+	}
+
+	.job-role-detail__section + .job-role-detail__section,
+	.job-role-detail__information {
+		margin-top: 1.5rem;
+		padding-top: 1.5rem;
+	}
+
+	.job-role-detail__specification {
+		margin: 1.5rem 0;
+	}
+
+	.job-role-detail__back {
+		margin-bottom: 1.5rem;
+	}
+
+	.job-role-detail__facts {
+		grid-template-columns: 1fr;
+	}
+
+	.job-role-detail__fact,
+	.job-role-detail__fact:nth-child(odd),
+	.job-role-detail__fact:nth-child(even) {
+		border-right: 0;
+		padding: 0.85rem 0;
 	}
 }

@@ -1,0 +1,48 @@
+{% extends "base.njk" %}
+
+{% block title %}Job Roles | Kainos careers{% endblock %}
+
+{% block hero %}
+	<h1>Job roles</h1>
+	<p class="hero__subtitle">Explore opportunities across capability teams at Kainos.</p>
+{% endblock %}
+
+{% block content %}
+	<main class="page-content">
+		<section class="card">
+			<h2>Current openings</h2>
+
+			{% if jobRoles.length > 0 %}
+				<div class="table-wrap">
+					<table>
+						<caption class="visually-hidden">Current Kainos job role openings</caption>
+						<thead>
+							<tr>
+								<th>Job Role Name</th>
+								<th>Location</th>
+								<th>Capability</th>
+								<th>Band</th>
+								<th>Closing Date</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for jobRole in jobRoles %}
+								<tr>
+									<td><a href="/job-roles/{{ jobRole.id }}">{{ jobRole.roleName }}</a></td>
+									<td>{{ jobRole.location }}</td>
+									<td>{{ jobRole.capability.name }}</td>
+									<td>{{ jobRole.band.name }}</td>
+									<td>{{ jobRole.closingDate }}</td>
+									<td>{{ jobRole.status.name }}</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			{% else %}
+				<p class="empty-state">No job roles found.</p>
+			{% endif %}
+		</section>
+	</main>
+{% endblock %}

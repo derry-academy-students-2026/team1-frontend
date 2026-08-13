@@ -10,7 +10,7 @@
 		}
 	},
 	"files": {
-		"includes": ["**", "!coverage", "!dist", "!build"]
+		"includes": ["**", "!coverage", "!dist", "!build", "!code_reviews/context"]
 	},
 	"linter": {
 		"enabled": true,
