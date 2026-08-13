@@ -59,7 +59,7 @@ export class JobRoleController {
 					? jobRole.closingDate
 					: new Date(jobRole.closingDate);
 
-			res.render("job-role-information.html", {
+			res.render("job-role-information.njk", {
 				jobRole: {
 					...jobRole,
 					closingDate: dateValue.toLocaleDateString("en-GB", {

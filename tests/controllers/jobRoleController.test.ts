@@ -137,7 +137,7 @@ describe("JobRoleController", () => {
 		expect(render).not.toHaveBeenCalled();
 	});
 
-	it("renders job-role-information.html with a job role", async () => {
+	it("renders job-role-information.njk with a job role", async () => {
 		const jobRole = {
 			id: 1,
 			roleName: "Software Engineer",
@@ -163,7 +163,7 @@ describe("JobRoleController", () => {
 		);
 
 		expect(jobRoleApiService.getJobRoleById).toHaveBeenCalledWith(1);
-		expect(render).toHaveBeenCalledWith("job-role-information.html", {
+		expect(render).toHaveBeenCalledWith("job-role-information.njk", {
 			jobRole: { ...jobRole, closingDate: "30/8/2026" },
 		});
 	});
