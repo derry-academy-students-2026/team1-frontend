@@ -4,6 +4,11 @@
 		"enabled": true,
 		"indentStyle": "tab"
 	},
+	"html": {
+		"parser": {
+			"interpolation": true
+		}
+	},
 	"files": {
 		"includes": ["**", "!coverage", "!dist", "!build"]
 	},

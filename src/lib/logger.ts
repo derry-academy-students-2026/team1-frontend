@@ -1,4 +1,3 @@
-import { mkdirSync } from "node:fs";
 import winston from "winston";
 
 const levels = {
