@@ -55,9 +55,11 @@ describe("JobRoleApiService", () => {
 				config: {} as never,
 			});
 
-			const result = await getJobRoles();
+			const result = await getJobRoles("test-token");
 
-			expect(apiClient.get).toHaveBeenCalledWith("/job-roles");
+			expect(apiClient.get).toHaveBeenCalledWith("/job-roles", {
+				headers: { Authorization: "Bearer test-token" },
+			});
 			expect(result).toEqual(mockJobRoles);
 			expect(result).toHaveLength(2);
 		});
@@ -273,9 +275,11 @@ describe("JobRoleApiService", () => {
 				config: {} as never,
 			});
 
-			const result = await getJobRoleById(1);
+			const result = await getJobRoleById(1, "test-token");
 
-			expect(apiClient.get).toHaveBeenCalledWith("/job-roles/1");
+			expect(apiClient.get).toHaveBeenCalledWith("/job-roles/1", {
+				headers: { Authorization: "Bearer test-token" },
+			});
 			expect(result).toEqual(mockJobRoles[0]);
 		});
 

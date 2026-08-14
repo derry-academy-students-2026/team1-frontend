@@ -2,6 +2,12 @@ import type { Request, Response } from "express";
 import Logger from "../lib/logger.js";
 import * as jobRoleApiService from "../services/jobRoleApiService.js";
 
+function isUnauthorized(error: unknown): boolean {
+	return (
+		(error as { response?: { status?: number } })?.response?.status === 401
+	);
+}
+
 export class JobRoleController {
 	/**
 	 * Initializes the controller with a job role service dependency.
@@ -14,9 +20,11 @@ export class JobRoleController {
 	 *
 	 * @returns Renders job-role-list.njk with job roles.
 	 */
-	async getJobRoles(_req: Request, res: Response) {
+	async getJobRoles(req: Request, res: Response) {
 		try {
-			const jobRoles = await this.jobApiRoleService.getJobRoles();
+			const jobRoles = await this.jobApiRoleService.getJobRoles(
+				req.session?.jwtToken,
+			);
 
 			const jobRolesForView = jobRoles.map((jobRole) => {
 				const dateValue =
@@ -39,6 +47,13 @@ export class JobRoleController {
 			res.render("job-role-list.njk", { jobRoles: jobRolesForView });
 		} catch (error) {
 			const message = error instanceof Error ? error.message : "Unknown error";
+
+			if (isUnauthorized(error)) {
+				Logger.warn("Backend rejected the session token, re-authenticating");
+				res.redirect("/logout");
+				return;
+			}
+
 			Logger.error(`Failed to load job roles: ${message}`);
 			res.status(500).send("Unable to load job roles");
 		}
@@ -61,7 +76,10 @@ export class JobRoleController {
 		}
 
 		try {
-			const jobRole = await this.jobApiRoleService.getJobRoleById(id);
+			const jobRole = await this.jobApiRoleService.getJobRoleById(
+				id,
+				req.session?.jwtToken,
+			);
 			const dateValue =
 				jobRole.closingDate instanceof Date
 					? jobRole.closingDate
@@ -81,6 +99,12 @@ export class JobRoleController {
 			const status = (error as { response?: { status?: number } }).response
 				?.status;
 			const message = error instanceof Error ? error.message : "Unknown error";
+
+			if (status === 401) {
+				Logger.warn("Backend rejected the session token, re-authenticating");
+				res.redirect("/logout");
+				return;
+			}
 
 			if (status === 404) {
 				Logger.error(`Job role ${id} not found: ${message}`);

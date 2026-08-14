@@ -158,11 +158,17 @@ describe("JobRoleController", () => {
 		const response = { render } as unknown as Response;
 
 		await controller.getJobRole(
-			{ params: { id: "1" } } as unknown as Request,
+			{
+				params: { id: "1" },
+				session: { jwtToken: "test-token" },
+			} as unknown as Request,
 			response,
 		);
 
-		expect(jobRoleApiService.getJobRoleById).toHaveBeenCalledWith(1);
+		expect(jobRoleApiService.getJobRoleById).toHaveBeenCalledWith(
+			1,
+			"test-token",
+		);
 		expect(render).toHaveBeenCalledWith("job-role-information.njk", {
 			jobRole: { ...jobRole, closingDate: "30/8/2026" },
 		});
