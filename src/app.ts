@@ -2,12 +2,20 @@ import "dotenv/config";
 import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import express from "express";
+import session from "express-session";
 import nunjucks from "nunjucks";
 import morganMiddleware from "./config/morganMiddleware.js";
 import Logger from "./lib/logger.js";
+import authRouter from "./routes/authRouter.js";
 import jobRoleRouter from "./routes/jobRoleRouter.js";
 
 const app = express();
+
+if (!process.env.SESSION_SECRET && process.env.NODE_ENV === "production") {
+	throw new Error(
+		"SESSION_SECRET environment variable must be set in production",
+	);
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -31,9 +39,32 @@ Logger.info("App initialization started");
  */
 app.use("/assets", express.static(path.join(__dirname, "public")));
 
+// Parse login form submissions
+app.use(express.urlencoded({ extended: true }));
+
 // Register Morgan middleware for logging HTTP requests
 app.use(morganMiddleware);
 Logger.info("Morgan HTTP middleware registered");
+
+app.use(
+	session({
+		secret: process.env.SESSION_SECRET ?? "dev-session-secret",
+		resave: false,
+		saveUninitialized: false,
+		cookie: {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			sameSite: "lax",
+		},
+	}),
+);
+Logger.info("Session middleware registered");
+
+// Exposes login state to views without leaking the token itself
+app.use((req, res, next) => {
+	res.locals.isAuthenticated = Boolean(req.session.jwtToken);
+	next();
+});
 
 // Health check
 app.get("/health", (_req, res) => {
@@ -44,5 +75,9 @@ app.get("/health", (_req, res) => {
 // Route requests through jobRoleRouter.
 app.use("/", jobRoleRouter);
 Logger.info("Job routes mounted at /");
+
+// Route requests through authRouter.
+app.use("/", authRouter);
+Logger.info("Auth routes mounted at /");
 
 export default app;

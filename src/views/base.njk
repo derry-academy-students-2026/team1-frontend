@@ -13,6 +13,14 @@
 			<a class="site-logo" href="/" aria-label="Kainos home">
 				<img src="/assets/images/kainos-logo-alt-transparent.png" alt="Kainos" />
 			</a>
+			<nav class="hero__nav" aria-label="Account">
+				<a class="hero__nav-link" href="/">Home</a>
+				{% if isAuthenticated %}
+					<a class="hero__nav-link" href="/logout">Sign out</a>
+				{% else %}
+					<a class="hero__nav-link" href="/login">Sign in</a>
+				{% endif %}
+			</nav>
 			<p class="hero__eyebrow">Kainos Careers</p>
 			{% block hero %}{% endblock %}
 		</div>

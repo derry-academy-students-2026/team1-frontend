@@ -58,10 +58,15 @@ Set these variables in a local `.env` file when needed:
 API_BASE_URL="http://localhost:4000"
 PORT="3000"
 NODE_ENV="development"
+SESSION_SECRET="replace-with-a-strong-random-value"
+AUTH_LOGIN_PATH="/auth/login"
 ```
 
 `API_BASE_URL` and `PORT` use the shown defaults when unset. `NODE_ENV` defaults
-to `development`.
+to `development`. `AUTH_LOGIN_PATH` defaults to `/auth/login` when unset.
+`SESSION_SECRET` must be set to a strong random value in production; a
+development fallback is used otherwise, but this should never be relied on
+outside local development.
 ## Build
 ```bash
 npm run build

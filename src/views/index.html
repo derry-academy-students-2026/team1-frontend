@@ -15,6 +15,11 @@
 			</a>
 			<nav aria-label="Main navigation">
 				<a href="/job-roles">Job roles</a>
+				{% if isAuthenticated %}
+					<a href="/logout">Sign out</a>
+				{% else %}
+					<a href="/login">Sign in</a>
+				{% endif %}
 			</nav>
 		</div>
 	</header>
