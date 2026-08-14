@@ -8,18 +8,25 @@ data for the frontend pages.
 - Node.js and Express
 - Nunjucks
 - Axios
+- Morgan
+- Winston
 - Vitest and Supertest
 - Biome
 ## Architecture
 ```text
-Routes -> Controllers -> Services
-			             	 |
-							Axios
-							 |
-						 Backend API
-							 |
-						    Views
+Browser
+  -> Express app
+	  -> Router
+		  -> Controller
+			  -> Service
+				  -> API client
+					  -> Job Roles API (API_BASE_URL)
+
+Controller -> Nunjucks views -> HTML response
 ```
+Server bootstrap loads environment variables and starts the Express server.
+Logging middleware captures request logs and application logs.
+Static assets are served on `/assets`.
 ## Project Structure
 ```text
 src/
