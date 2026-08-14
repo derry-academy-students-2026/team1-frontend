@@ -70,6 +70,20 @@ body > main {
 	text-decoration: underline;
 }
 
+.hero__nav {
+	text-align: right;
+}
+
+.hero__nav-link {
+	color: var(--kainos-white);
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.hero__nav-link:hover {
+	text-decoration: underline;
+}
+
 .hero {
 	background: linear-gradient(
 		45deg,
@@ -369,6 +383,51 @@ a:focus-visible {
 
 .button--primary:hover {
 	background: #eef4fa;
+}
+
+.button--submit {
+	background: var(--kainos-blue);
+	border: none;
+	color: var(--kainos-white);
+	cursor: pointer;
+	font-family: inherit;
+	font-size: 1rem;
+}
+
+.button--submit:hover {
+	background: var(--kainos-mid-blue);
+}
+
+.login-card {
+	max-width: 420px;
+}
+
+.form-group {
+	margin-bottom: 1.1rem;
+}
+
+.form-group label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 0.4rem;
+}
+
+.form-group input {
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	box-sizing: border-box;
+	font-family: inherit;
+	font-size: 1rem;
+	padding: 0.65rem 0.75rem;
+	width: 100%;
+}
+
+.form-error {
+	background: #fdecea;
+	border: 1px solid #d93025;
+	border-radius: 4px;
+	color: #d93025;
+	padding: 0.75rem 1rem;
 }
 
 .site-footer {
