@@ -2,12 +2,17 @@
 
 {% block title %}{{ jobRole.roleName }} | Kainos careers{% endblock %}
 
+{% block bodyClass %}page-job-roles{% endblock %}
+
+{% block eyebrow %}Job role{% endblock %}
+
 {% block hero %}
 	<h1>{{ jobRole.roleName }}</h1>
+	<p class="hero__subtitle">{{ jobRole.location }} &middot; {{ jobRole.capability.name }}</p>
 {% endblock %}
 
 {% block content %}
-	<main class="page-content page-content--detail">
+	<div class="page-content page-content--detail">
 		<nav class="breadcrumb" aria-label="Breadcrumb">
 			<ol class="breadcrumb__list">
 				<li><a href="/job-roles">Job roles</a></li>
@@ -15,9 +20,8 @@
 			</ol>
 		</nav>
 
-		<article class="card job-role-detail">
-			<p class="job-role-detail__back"><a href="/job-roles">Back to job roles</a></p>
-			<div class="job-role-detail__content">
+		<div class="job-role-detail">
+			<article class="card job-role-detail__main">
 				<section class="job-role-detail__section" aria-labelledby="description-heading">
 					<h2 id="description-heading">Description</h2>
 					<p>{{ jobRole.description }}</p>
@@ -27,15 +31,15 @@
 					<h2 id="responsibilities-heading">Responsibilities</h2>
 					<p>{{ jobRole.responsibilities }}</p>
 				</section>
-			</div>
 
-			<p class="job-role-detail__specification">
-				<a href="{{ jobRole.sharepointUrl }}" target="_blank" rel="noopener noreferrer">
-					View job specification <span class="visually-hidden">(opens in a new tab)</span>
-				</a>
-			</p>
+				<p class="job-role-detail__specification">
+					<a class="button button--spec" href="{{ jobRole.sharepointUrl }}" target="_blank" rel="noopener noreferrer">
+						View job specification <span class="visually-hidden">(opens in a new tab)</span>
+					</a>
+				</p>
+			</article>
 
-			<section class="job-role-detail__information" aria-labelledby="role-information-heading">
+			<aside class="card job-role-detail__aside" aria-labelledby="role-information-heading">
 				<h2 id="role-information-heading">Role information</h2>
 				<dl class="job-role-detail__facts">
 					<div class="job-role-detail__fact">
@@ -56,15 +60,17 @@
 					</div>
 					<div class="job-role-detail__fact">
 						<dt>Status</dt>
-						<dd>{{ jobRole.status.name }}</dd>
+						<dd><span class="badge badge--{{ jobRole.status.name | default('') | lower }}">{{ jobRole.status.name }}</span></dd>
 					</div>
 					<div class="job-role-detail__fact">
 						<dt>Number of open positions</dt>
 						<dd>{{ jobRole.numberOfOpenPositions }}</dd>
 					</div>
 				</dl>
-			</section>
-		</article>
-	</main>
+			</aside>
+		</div>
+
+		<p><a class="back-link" href="/job-roles">Back to job roles</a></p>
+	</div>
 {% endblock %}
 
