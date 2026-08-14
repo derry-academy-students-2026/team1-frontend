@@ -26,12 +26,15 @@ export class AuthController {
 	 * and storing the returned JWT in the browser session.
 	 */
 	async login(req: Request, res: Response) {
+		Logger.debug("🌐 [POST /login] Received login request");
+
 		const { email, password } = req.body as {
 			email?: string;
 			password?: string;
 		};
 
 		if (!email || !password) {
+			Logger.warn("⚠️  [POST /login] Missing email or password | Status: 400");
 			res.render("login.njk", {
 				error: "Enter your email and password",
 			});
@@ -41,6 +44,7 @@ export class AuthController {
 		try {
 			const { token } = await this.authApiServiceImpl.login(email, password);
 			req.session.jwtToken = token;
+			Logger.info("✅ [POST /login] Login successful | Status: 302");
 			res.redirect("/job-roles");
 		} catch (error) {
 			const message = error instanceof Error ? error.message : "Unknown error";
