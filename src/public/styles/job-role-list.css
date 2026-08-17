@@ -128,6 +128,23 @@ body > main {
 	border-bottom-color: var(--kainos-green);
 }
 
+.hero__nav {
+	align-items: center;
+	display: flex;
+	gap: 1.75rem;
+	justify-content: flex-end;
+}
+
+.hero__nav-link {
+	color: var(--kainos-white);
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.hero__nav-link:hover {
+	text-decoration: underline;
+}
+
 .hero {
 	background: var(--kainos-gradient);
 	color: var(--kainos-white);
