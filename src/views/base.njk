@@ -7,32 +7,49 @@
 	<link rel="icon" type="image/png" href="/assets/images/kainos-favicon.png" />
 	<link rel="stylesheet" href="/assets/styles/job-role-list.css" />
 </head>
-<body>
-	<header class="hero">
-		<div class="hero__content">
+<body class="{% block bodyClass %}{% endblock %}">
+	<a class="skip-link" href="#main-content">Skip to main content</a>
+
+	<header class="site-header">
+		<div class="site-header__inner">
 			<a class="site-logo" href="/" aria-label="Kainos home">
-				<img src="/assets/images/kainos-logo-alt-transparent.png" alt="Kainos" />
+				<img src="/assets/images/kainos-logo-primary-transparent.png" alt="Kainos" />
 			</a>
-			<nav class="hero__nav" aria-label="Account">
-				<a class="hero__nav-link" href="/">Home</a>
+			<nav class="site-nav" aria-label="Main navigation">
+				<a class="site-nav__link" href="/">Home</a>
+				<a class="site-nav__link" href="/job-roles">Job roles</a>
 				{% if isAuthenticated %}
-					<a class="hero__nav-link" href="/logout">Sign out</a>
+					<a class="site-nav__link" href="/logout">Sign out</a>
 				{% else %}
-					<a class="hero__nav-link" href="/login">Sign in</a>
+					<a class="site-nav__link" href="/login">Sign in</a>
 				{% endif %}
 			</nav>
-			<p class="hero__eyebrow">Kainos Careers</p>
-			{% block hero %}{% endblock %}
 		</div>
 	</header>
 
-	{% block content %}{% endblock %}
+	<div class="hero {% block heroModifier %}{% endblock %}">
+		<div class="hero__content">
+			<p class="hero__eyebrow">{% block eyebrow %}Kainos careers{% endblock %}</p>
+			{% block hero %}{% endblock %}
+		</div>
+	</div>
+
+	<main id="main-content">
+		{% block content %}{% endblock %}
+	</main>
 
 	<footer class="site-footer">
 		<div class="site-footer__inner">
 			<div>
 				<strong>Kainos</strong>
 				<p>Technology that makes a difference.</p>
+			</div>
+			<div>
+				<h2>Careers</h2>
+				<ul class="site-footer__links">
+					<li><a href="/">Home</a></li>
+					<li><a href="/job-roles">Job roles</a></li>
+				</ul>
 			</div>
 			<div>
 				<h2>Contact</h2>

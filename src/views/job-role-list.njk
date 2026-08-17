@@ -2,15 +2,20 @@
 
 {% block title %}Job Roles | Kainos careers{% endblock %}
 
+{% block bodyClass %}page-job-roles{% endblock %}
+
 {% block hero %}
 	<h1>Job roles</h1>
 	<p class="hero__subtitle">Explore opportunities across capability teams at Kainos.</p>
 {% endblock %}
 
 {% block content %}
-	<main class="page-content">
-		<section class="card">
-			<h2>Current openings</h2>
+	<div class="page-content">
+		<section class="card" aria-labelledby="current-openings-heading">
+			<div class="card__header">
+				<h2 id="current-openings-heading">Current openings</h2>
+				<p class="card__meta">{{ jobRoles.length }} role{% if jobRoles.length != 1 %}s{% endif %} available</p>
+			</div>
 
 			{% if jobRoles.length > 0 %}
 				<div class="table-wrap">
@@ -18,23 +23,23 @@
 						<caption class="visually-hidden">Current Kainos job role openings</caption>
 						<thead>
 							<tr>
-								<th>Job Role Name</th>
-								<th>Location</th>
-								<th>Capability</th>
-								<th>Band</th>
-								<th>Closing Date</th>
-								<th>Status</th>
+								<th scope="col">Job role</th>
+								<th scope="col">Location</th>
+								<th scope="col">Capability</th>
+								<th scope="col">Band</th>
+								<th scope="col">Closing date</th>
+								<th scope="col">Status</th>
 							</tr>
 						</thead>
 						<tbody>
 							{% for jobRole in jobRoles %}
 								<tr>
-									<td><a href="/job-roles/{{ jobRole.id }}">{{ jobRole.roleName }}</a></td>
-									<td>{{ jobRole.location }}</td>
-									<td>{{ jobRole.capability.name }}</td>
-									<td>{{ jobRole.band.name }}</td>
-									<td>{{ jobRole.closingDate }}</td>
-									<td>{{ jobRole.status.name }}</td>
+									<td data-label="Job role"><a class="job-role-link" href="/job-roles/{{ jobRole.id }}">{{ jobRole.roleName }}</a></td>
+									<td data-label="Location">{{ jobRole.location }}</td>
+									<td data-label="Capability">{{ jobRole.capability.name }}</td>
+									<td data-label="Band">{{ jobRole.band.name }}</td>
+									<td data-label="Closing date" class="cell-muted">{{ jobRole.closingDate }}</td>
+									<td data-label="Status"><span class="badge badge--{{ jobRole.status.name | default('') | lower }}">{{ jobRole.status.name }}</span></td>
 								</tr>
 							{% endfor %}
 						</tbody>
@@ -44,5 +49,5 @@
 				<p class="empty-state">No job roles found.</p>
 			{% endif %}
 		</section>
-	</main>
+	</div>
 {% endblock %}
