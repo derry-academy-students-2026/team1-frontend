@@ -10,7 +10,14 @@
 		}
 	},
 	"files": {
-		"includes": ["**", "!coverage", "!dist", "!build", "!code_reviews/context"]
+		"includes": [
+			"**",
+			"!coverage",
+			"!dist",
+			"!build",
+			"!code_reviews/context",
+			"!playwright-report/index.html"
+		]
 	},
 	"linter": {
 		"enabled": true,
