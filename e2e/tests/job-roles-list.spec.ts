@@ -1,26 +1,15 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../fixtures/authenticated-test";
 import {
 	formatClosingDate,
-	seededJobRoles,
-	testUser,
+	openJobRoles,
+	secondaryOpenJobRole,
 } from "../fixtures/test-data";
+import { HomePage } from "../pages/home-page";
 import { JobRoleDetailPage } from "../pages/job-role-detail-page";
 import { JobRolesListPage } from "../pages/job-roles-list-page";
-import { LoginPage } from "../pages/login-page";
 
 test.describe("Job roles list", () => {
-	test.beforeEach(async ({ page }) => {
-		const loginPage = new LoginPage(page);
-		await loginPage.goto();
-		await loginPage.login(testUser.email, testUser.password);
-	});
-
 	test("lists every seeded job role with its key details", async ({ page }) => {
-		// The backend only returns roles with an "open" status.
-		const openJobRoles = seededJobRoles.filter(
-			(role) => role.status === "open",
-		);
-
 		const listPage = new JobRolesListPage(page);
 		await expect(listPage.rows).toHaveCount(openJobRoles.length);
 
@@ -36,11 +25,17 @@ test.describe("Job roles list", () => {
 
 	test("navigates to a job role's detail page", async ({ page }) => {
 		const listPage = new JobRolesListPage(page);
-		const targetRole = seededJobRoles[1];
-		await listPage.openRole(targetRole.roleName);
+		await listPage.openRole(secondaryOpenJobRole.roleName);
 
 		await expect(new JobRoleDetailPage(page).heading).toHaveText(
-			targetRole.roleName,
+			secondaryOpenJobRole.roleName,
 		);
+	});
+
+	test("returns home through the list page header", async ({ page }) => {
+		const listPage = new JobRolesListPage(page);
+		await listPage.openHomeFromHeader();
+
+		await expect(new HomePage(page).heading).toBeVisible();
 	});
 });

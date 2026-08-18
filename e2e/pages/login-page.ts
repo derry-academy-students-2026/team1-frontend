@@ -1,17 +1,17 @@
 import type { Locator, Page } from "@playwright/test";
+import { BasePage } from "./base-page.js";
 
 /**
  * Page object for the /login page.
  */
-export class LoginPage {
-	readonly page: Page;
+export class LoginPage extends BasePage {
 	readonly emailInput: Locator;
 	readonly passwordInput: Locator;
 	readonly submitButton: Locator;
 	readonly errorMessage: Locator;
 
 	constructor(page: Page) {
-		this.page = page;
+		super(page);
 		this.emailInput = page.locator("#email");
 		this.passwordInput = page.locator("#password");
 		this.submitButton = page.getByRole("button", { name: "Sign in" });
@@ -22,9 +22,21 @@ export class LoginPage {
 		await this.page.goto("/login");
 	}
 
-	async login(email: string, password: string) {
+	async enterEmail(email: string) {
 		await this.emailInput.fill(email);
+	}
+
+	async enterPassword(password: string) {
 		await this.passwordInput.fill(password);
+	}
+
+	async submit() {
 		await this.submitButton.click();
+	}
+
+	async login(email: string, password: string) {
+		await this.enterEmail(email);
+		await this.enterPassword(password);
+		await this.submit();
 	}
 }

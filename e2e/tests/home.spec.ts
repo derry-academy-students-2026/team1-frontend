@@ -1,25 +1,40 @@
 import { expect, test } from "@playwright/test";
+import { urls } from "../fixtures/test-data";
+import { HomePage } from "../pages/home-page.js";
 
 test.describe("Public navigation", () => {
 	test("home page shows a sign in link when logged out", async ({ page }) => {
-		await page.goto("/");
+		const homePage = new HomePage(page);
+		await homePage.goto();
 
-		await expect(
-			page.getByRole("heading", { name: "Make a difference with technology" }),
-		).toBeVisible();
-		await expect(
-			page.getByRole("link", { name: "Sign in" }).first(),
-		).toBeVisible();
-		await expect(page.getByRole("link", { name: "Sign out" })).toHaveCount(0);
+		await expect(homePage.heading).toBeVisible();
+		await expect(homePage.headerSignInLink).toBeVisible();
+		await expect(homePage.headerSignOutLink).toHaveCount(0);
 	});
 
-	test("job roles link in the header requires sign in", async ({ page }) => {
-		await page.goto("/");
-		await page
-			.getByRole("navigation", { name: "Main navigation" })
-			.getByRole("link", { name: "Job roles" })
-			.click();
+	test("every home page job roles link requires sign in", async ({ page }) => {
+		const homePage = new HomePage(page);
+		const openJobRoles = [
+			() => homePage.openJobRoles(),
+			() => homePage.openJobRolesFromHero(),
+			() => homePage.viewAllJobRoles(),
+			() => homePage.viewOpenRoles(),
+			() => homePage.openJobRolesFromFooter(),
+		];
 
-		await expect(page).toHaveURL(/\/login$/);
+		for (const openRoles of openJobRoles) {
+			await homePage.goto();
+			await openRoles();
+
+			await expect(page).toHaveURL(/\/login$/);
+		}
+	});
+
+	test("hero sign in link opens the login page", async ({ page }) => {
+		const homePage = new HomePage(page);
+		await homePage.goto();
+		await homePage.signInFromHero();
+
+		await expect(page).toHaveURL(urls.login);
 	});
 });

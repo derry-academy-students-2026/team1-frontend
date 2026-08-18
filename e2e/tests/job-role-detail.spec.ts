@@ -1,51 +1,71 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../fixtures/authenticated-test";
 import {
 	formatClosingDate,
-	seededJobRoles,
-	testUser,
+	primaryOpenJobRole,
+	urls,
 } from "../fixtures/test-data";
 import { JobRoleDetailPage } from "../pages/job-role-detail-page";
 import { JobRolesListPage } from "../pages/job-roles-list-page";
-import { LoginPage } from "../pages/login-page";
 
 test.describe("Job role detail", () => {
-	test.beforeEach(async ({ page }) => {
-		const loginPage = new LoginPage(page);
-		await loginPage.goto();
-		await loginPage.login(testUser.email, testUser.password);
-	});
-
 	test("shows full details for a valid job role", async ({ page }) => {
-		const [role] = seededJobRoles;
 		const listPage = new JobRolesListPage(page);
-		await listPage.openRole(role.roleName);
+		await listPage.openRole(primaryOpenJobRole.roleName);
 
 		const detailPage = new JobRoleDetailPage(page);
-		await expect(detailPage.heading).toHaveText(role.roleName);
-		await expect(page.getByText(role.description)).toBeVisible();
-		await expect(page.getByText(role.responsibilities)).toBeVisible();
-		await expect(detailPage.facts).toContainText(role.location);
-		await expect(detailPage.facts).toContainText(role.capability);
-		await expect(detailPage.facts).toContainText(role.band);
-		await expect(detailPage.facts).toContainText(
-			formatClosingDate(role.closingDate),
+		await expect(detailPage.heading).toHaveText(primaryOpenJobRole.roleName);
+		await expect(detailPage.description).toHaveText(
+			primaryOpenJobRole.description,
 		);
-		await expect(detailPage.facts).toContainText(role.status, {
+		await expect(detailPage.responsibilities).toHaveText(
+			primaryOpenJobRole.responsibilities,
+		);
+		await expect(detailPage.facts).toContainText(primaryOpenJobRole.location);
+		await expect(detailPage.facts).toContainText(primaryOpenJobRole.capability);
+		await expect(detailPage.facts).toContainText(primaryOpenJobRole.band);
+		await expect(detailPage.facts).toContainText(
+			formatClosingDate(primaryOpenJobRole.closingDate),
+		);
+		await expect(detailPage.facts).toContainText(primaryOpenJobRole.status, {
 			ignoreCase: true,
 		});
 		await expect(detailPage.facts).toContainText(
-			String(role.numberOfOpenPositions),
+			String(primaryOpenJobRole.numberOfOpenPositions),
 		);
 	});
 
 	test("returns to the job roles list via the back link", async ({ page }) => {
-		const [role] = seededJobRoles;
 		const listPage = new JobRolesListPage(page);
-		await listPage.openRole(role.roleName);
+		await listPage.openRole(primaryOpenJobRole.roleName);
 
 		const detailPage = new JobRoleDetailPage(page);
-		await detailPage.backLink.click();
-		await expect(page).toHaveURL(/\/job-roles$/);
+		await detailPage.returnToJobRoles();
+		await expect(page).toHaveURL(urls.jobRoles);
+	});
+
+	test("returns to the job roles list via the breadcrumb", async ({ page }) => {
+		const listPage = new JobRolesListPage(page);
+		await listPage.openRole(primaryOpenJobRole.roleName);
+
+		const detailPage = new JobRoleDetailPage(page);
+		await detailPage.returnToJobRolesViaBreadcrumb();
+
+		await expect(page).toHaveURL(urls.jobRoles);
+	});
+
+	test("offers the job specification in a new tab", async ({ page }) => {
+		const listPage = new JobRolesListPage(page);
+		await listPage.openRole(primaryOpenJobRole.roleName);
+
+		const detailPage = new JobRoleDetailPage(page);
+		await expect(detailPage.jobSpecificationLink).toHaveAttribute(
+			"target",
+			"_blank",
+		);
+		await expect(detailPage.jobSpecificationLink).toHaveAttribute("href");
+		const newTab = page.waitForEvent("popup");
+		await detailPage.viewJobSpecification();
+		await newTab;
 	});
 
 	test("returns a 404 for a job role id that does not exist", async ({
