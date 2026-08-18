@@ -37,6 +37,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.7",
+		"@playwright/test": "^1.62.1",
 		"@types/express": "^5.0.6",
 		"@types/express-session": "^1.19.0",
 		"@types/morgan": "^1.9.10",
