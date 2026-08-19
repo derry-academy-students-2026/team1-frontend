@@ -3,7 +3,7 @@ Feature: Login
   I want to sign in with my email and password
   So that I can access the job roles list
 
-  Scenario Outline: User completes login flow with valid credentials
+  Scenario: User completes login flow with valid credentials
     Given the user is on the home page
     When the user clicks on the login button
     Then the login page is displayed
