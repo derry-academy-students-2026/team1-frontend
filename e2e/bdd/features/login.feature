@@ -9,5 +9,5 @@ Feature: Login
     Then the login page is displayed
     When the user enters the email "test1@example.com"
     And enters the password "Password123!"
-    Then clicks the login button
+    When clicks the login button
     Then the user is logged in and taken to the job-roles page
