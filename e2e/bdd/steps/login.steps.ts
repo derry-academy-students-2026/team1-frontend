@@ -99,3 +99,10 @@ Then(
 		await expect(this.jobRolesListPage.heading).toBeVisible();
 	},
 );
+
+Then(
+	"the user is presented with an invalid credentials message",
+	async function (this: CustomWorld) {
+		await expect(this.loginPage.errorMessage).toBeVisible();
+	},
+);
