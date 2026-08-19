@@ -255,9 +255,7 @@ body > main {
 
 .home-intro .section-intro {
 	margin: 0;
-}
-
-.home-paths {
+}.home-paths {
 	border-top: 1px solid var(--border);
 	padding: 2.5rem 0 3rem;
 }
