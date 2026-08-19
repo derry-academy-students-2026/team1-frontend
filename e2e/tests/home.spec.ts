@@ -15,11 +15,11 @@ test.describe("Public navigation", () => {
 	test("every home page job roles link requires sign in", async ({ page }) => {
 		const homePage = new HomePage(page);
 		const openJobRoles = [
-			() => homePage.openJobRoles(),
-			() => homePage.openJobRolesFromHero(),
-			() => homePage.viewAllJobRoles(),
-			() => homePage.viewOpenRoles(),
-			() => homePage.openJobRolesFromFooter(),
+			() => homePage.clickOpenJobRoles(),
+			() => homePage.clickOpenJobRolesFromHero(),
+			() => homePage.clickViewAllJobRoles(),
+			() => homePage.clickViewOpenRoles(),
+			() => homePage.clickOpenJobRolesFromFooter(),
 		];
 
 		for (const openRoles of openJobRoles) {
@@ -33,7 +33,7 @@ test.describe("Public navigation", () => {
 	test("hero sign in link opens the login page", async ({ page }) => {
 		const homePage = new HomePage(page);
 		await homePage.goto();
-		await homePage.signInFromHero();
+		await homePage.clickSignInFromHero();
 
 		await expect(page).toHaveURL(urls.login);
 	});
@@ -50,7 +50,7 @@ test.describe("Public navigation", () => {
 		const homePage = new HomePage(page);
 		await homePage.goto();
 
-		await homePage.openLoginFromHeader();
+		await homePage.clickOpenLoginFromHeader();
 		await expect(page).toHaveURL(urls.login);
 	});
 
@@ -58,7 +58,7 @@ test.describe("Public navigation", () => {
 		const homePage = new HomePage(page);
 		await homePage.goto();
 
-		await homePage.openHomeFromLogo();
+		await homePage.clickOpenHomeFromLogo();
 		await expect(page).toHaveURL(/\/$/);
 	});
 
@@ -66,7 +66,7 @@ test.describe("Public navigation", () => {
 		const homePage = new HomePage(page);
 		await homePage.goto();
 
-		await homePage.openHomeFromFooter();
+		await homePage.clickOpenHomeFromFooter();
 		await expect(page).toHaveURL(/\/$/);
 	});
 

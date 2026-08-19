@@ -18,16 +18,16 @@ export class JobRolesListPage extends BasePage {
 		await this.page.goto("/job-roles");
 	}
 
-	roleLink(roleName: string): Locator {
+	checkRoleLink(roleName: string): Locator {
 		return this.page.getByRole("link", { name: roleName });
 	}
 
-	rowForRole(roleName: string): Locator {
-		return this.rows.filter({ has: this.roleLink(roleName) });
+	checkRowForRole(roleName: string): Locator {
+		return this.rows.filter({ has: this.checkRoleLink(roleName) });
 	}
 
-	async openRole(roleName: string) {
-		await this.roleLink(roleName).click();
+	async clickOpenRole(roleName: string) {
+		await this.checkRoleLink(roleName).click();
 	}
 
 	async signOut() {

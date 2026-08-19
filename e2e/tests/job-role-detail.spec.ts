@@ -10,7 +10,7 @@ import { JobRolesListPage } from "../pages/job-roles-list-page";
 test.describe("Job role detail", () => {
 	test("shows full details for a valid job role", async ({ page }) => {
 		const listPage = new JobRolesListPage(page);
-		await listPage.openRole(primaryOpenJobRole.roleName);
+		await listPage.clickOpenRole(primaryOpenJobRole.roleName);
 
 		const detailPage = new JobRoleDetailPage(page);
 		await expect(detailPage.heading).toHaveText(primaryOpenJobRole.roleName);
@@ -36,26 +36,26 @@ test.describe("Job role detail", () => {
 
 	test("returns to the job roles list via the back link", async ({ page }) => {
 		const listPage = new JobRolesListPage(page);
-		await listPage.openRole(primaryOpenJobRole.roleName);
+		await listPage.clickOpenRole(primaryOpenJobRole.roleName);
 
 		const detailPage = new JobRoleDetailPage(page);
-		await detailPage.returnToJobRoles();
+		await detailPage.clickReturnToJobRoles();
 		await expect(page).toHaveURL(urls.jobRoles);
 	});
 
 	test("returns to the job roles list via the breadcrumb", async ({ page }) => {
 		const listPage = new JobRolesListPage(page);
-		await listPage.openRole(primaryOpenJobRole.roleName);
+		await listPage.clickOpenRole(primaryOpenJobRole.roleName);
 
 		const detailPage = new JobRoleDetailPage(page);
-		await detailPage.returnToJobRolesViaBreadcrumb();
+		await detailPage.clickReturnToJobRolesViaBreadcrumb();
 
 		await expect(page).toHaveURL(urls.jobRoles);
 	});
 
 	test("offers the job specification in a new tab", async ({ page }) => {
 		const listPage = new JobRolesListPage(page);
-		await listPage.openRole(primaryOpenJobRole.roleName);
+		await listPage.clickOpenRole(primaryOpenJobRole.roleName);
 
 		const detailPage = new JobRoleDetailPage(page);
 		await expect(detailPage.jobSpecificationLink).toHaveAttribute(
@@ -64,7 +64,7 @@ test.describe("Job role detail", () => {
 		);
 		await expect(detailPage.jobSpecificationLink).toHaveAttribute("href");
 		const newTab = page.waitForEvent("popup");
-		await detailPage.viewJobSpecification();
+		await detailPage.clickViewJobSpecification();
 		await newTab;
 	});
 

@@ -67,11 +67,14 @@ Given("the user is on the home page", async function (this: CustomWorld) {
 });
 
 When("the user clicks on the login button", async function (this: CustomWorld) {
-	await this.homePage.signInFromHero();
+	await this.homePage.clickSignInFromHero();
 });
 
 Then("the login page is displayed", async function (this: CustomWorld) {
-	await expect(this.page).toHaveURL(urls.login);
+	await expect(
+		this.page,
+		"User should be redirected to the login page",
+	).toHaveURL(urls.login);
 });
 
 When(
@@ -89,20 +92,28 @@ When(
 );
 
 When("clicks the login button", async function (this: CustomWorld) {
-	await this.loginPage.submit();
+	await this.loginPage.clickSubmit();
 });
 
 Then(
 	"the user is logged in and taken to the job-roles page",
 	async function (this: CustomWorld) {
-		await expect(this.page).toHaveURL(urls.jobRoles);
-		await expect(this.jobRolesListPage.heading).toBeVisible();
+		await expect(this.page, "User should be on the job roles page").toHaveURL(
+			urls.jobRoles,
+		);
+		await expect(
+			this.jobRolesListPage.heading,
+			"Job roles heading should be visible after login",
+		).toBeVisible();
 	},
 );
 
 Then(
 	"the user is presented with an invalid credentials message",
 	async function (this: CustomWorld) {
-		await expect(this.loginPage.errorMessage).toBeVisible();
+		await expect(
+			this.loginPage.errorMessage,
+			"Invalid credentials error message should be visible",
+		).toBeVisible();
 	},
 );

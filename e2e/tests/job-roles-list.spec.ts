@@ -14,7 +14,7 @@ test.describe("Job roles list", () => {
 		await expect(listPage.rows).toHaveCount(openJobRoles.length);
 
 		for (const role of openJobRoles) {
-			const row = listPage.rowForRole(role.roleName);
+			const row = listPage.checkRowForRole(role.roleName);
 			await expect(row).toContainText(role.location);
 			await expect(row).toContainText(role.capability);
 			await expect(row).toContainText(role.band);
@@ -25,7 +25,7 @@ test.describe("Job roles list", () => {
 
 	test("navigates to a job role's detail page", async ({ page }) => {
 		const listPage = new JobRolesListPage(page);
-		await listPage.openRole(secondaryOpenJobRole.roleName);
+		await listPage.clickOpenRole(secondaryOpenJobRole.roleName);
 
 		await expect(new JobRoleDetailPage(page).heading).toHaveText(
 			secondaryOpenJobRole.roleName,
@@ -34,7 +34,7 @@ test.describe("Job roles list", () => {
 
 	test("returns home through the list page header", async ({ page }) => {
 		const listPage = new JobRolesListPage(page);
-		await listPage.openHomeFromHeader();
+		await listPage.clickOpenHomeFromHeader();
 
 		await expect(new HomePage(page).heading).toBeVisible();
 	});

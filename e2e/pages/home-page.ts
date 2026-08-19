@@ -30,23 +30,23 @@ export class HomePage extends BasePage {
 		await this.page.goto("/");
 	}
 
-	async openJobRoles() {
-		await this.openJobRolesFromHeader();
+	async clickOpenJobRoles() {
+		await this.clickOpenJobRolesFromHeader();
 	}
 
-	async openJobRolesFromHero() {
+	async clickOpenJobRolesFromHero() {
 		await this.heroJobRolesLink.click();
 	}
 
-	async signInFromHero() {
+	async clickSignInFromHero() {
 		await this.heroSignInLink.click();
 	}
 
-	async viewAllJobRoles() {
+	async clickViewAllJobRoles() {
 		await this.viewAllRolesLink.click();
 	}
 
-	async viewOpenRoles() {
+	async clickViewOpenRoles() {
 		await this.openRolesLink.click();
 	}
 }

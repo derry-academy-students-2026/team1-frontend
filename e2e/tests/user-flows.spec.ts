@@ -13,7 +13,7 @@ authenticatedTest.describe("Authenticated User Flows", () => {
 	authenticatedTest("navigates from home to job roles", async ({ page }) => {
 		const homePage = new HomePage(page);
 		await homePage.goto();
-		await homePage.openJobRoles();
+		await homePage.clickOpenJobRoles();
 
 		await authenticatedExpect(page).toHaveURL(urls.jobRoles);
 		await authenticatedExpect(new JobRolesListPage(page).heading).toBeVisible();
@@ -23,11 +23,11 @@ authenticatedTest.describe("Authenticated User Flows", () => {
 		"returns to the job roles list from a role detail page",
 		async ({ page }) => {
 			const listPage = new JobRolesListPage(page);
-			await listPage.openRole(primaryOpenJobRole.roleName);
+			await listPage.clickOpenRole(primaryOpenJobRole.roleName);
 			await authenticatedExpect(page).toHaveURL(/\/job-roles\/\d+$/);
 
 			const detailPage = new JobRoleDetailPage(page);
-			await detailPage.returnToJobRoles();
+			await detailPage.clickReturnToJobRoles();
 			await authenticatedExpect(page).toHaveURL(urls.jobRoles);
 		},
 	);
@@ -36,10 +36,10 @@ authenticatedTest.describe("Authenticated User Flows", () => {
 		"returns to job roles from home through the footer",
 		async ({ page }) => {
 			const listPage = new JobRolesListPage(page);
-			await listPage.openHomeFromHeader();
+			await listPage.clickOpenHomeFromHeader();
 			await authenticatedExpect(new HomePage(page).heading).toBeVisible();
 
-			await new HomePage(page).openJobRolesFromFooter();
+			await new HomePage(page).clickOpenJobRolesFromFooter();
 			await authenticatedExpect(page).toHaveURL(urls.jobRoles);
 		},
 	);
@@ -51,7 +51,7 @@ unauthenticatedTest.describe("Not Authenticated User Flows", () => {
 		async ({ page }) => {
 			const homePage = new HomePage(page);
 			await homePage.goto();
-			await homePage.openJobRoles();
+			await homePage.clickOpenJobRoles();
 
 			await expect(page).toHaveURL(urls.login);
 		},
@@ -87,17 +87,17 @@ unauthenticatedTest.describe("Not Authenticated User Flows", () => {
 		async ({ page }) => {
 			const homePage = new HomePage(page);
 			await homePage.goto();
-			await homePage.signInFromHero();
+			await homePage.clickSignInFromHero();
 			await expect(page).toHaveURL(urls.login);
 
 			const loginPage = new LoginPage(page);
 			await loginPage.enterEmail(testUser.email);
 			await loginPage.enterPassword(testUser.password);
-			await loginPage.submit();
+			await loginPage.clickSubmit();
 			await expect(page).toHaveURL(urls.jobRoles);
 
 			const listPage = new JobRolesListPage(page);
-			await listPage.openRole(primaryOpenJobRole.roleName);
+			await listPage.clickOpenRole(primaryOpenJobRole.roleName);
 			await expect(page).toHaveURL(/\/job-roles\/\d+$/);
 			await expect(new JobRoleDetailPage(page).heading).toHaveText(
 				primaryOpenJobRole.roleName,
