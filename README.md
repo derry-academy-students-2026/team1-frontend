@@ -99,16 +99,6 @@ e2e/
 Playwright starts the frontend itself (`npx tsx src/index.ts`) pointed at
 `BACKEND_URL`; you don't need to run `npm run dev` separately.
 
-### Running
-```bash
-npm run test:e2e          # headless, all browsers
-npm run test:e2e:ui       # interactive UI mode
-npm run test:e2e:headed   # headed browser windows
-npm run test:e2e:report   # open the last HTML report
-```
-`global-setup.ts` logs in as the seeded test user before any spec runs and
-fails fast with a clear error if the backend is unreachable or unseeded.
-`global-teardown.ts` runs once after the suite completes.
 ## Linting
 ```bash
 npm run lint

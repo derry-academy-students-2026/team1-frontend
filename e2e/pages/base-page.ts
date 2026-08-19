@@ -49,7 +49,8 @@ export class BasePage {
 	}
 
 	async skipToMainContent() {
-		await this.skipToMainContentLink.click();
+		await this.skipToMainContentLink.focus();
+		await this.skipToMainContentLink.press("Enter");
 	}
 
 	async openHomeFromLogo() {
