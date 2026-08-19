@@ -88,7 +88,7 @@ When(
 	},
 );
 
-Then("clicks the login button", async function (this: CustomWorld) {
+When("clicks the login button", async function (this: CustomWorld) {
 	await this.loginPage.submit();
 });
 
