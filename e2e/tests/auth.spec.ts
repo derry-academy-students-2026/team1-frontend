@@ -16,7 +16,7 @@ test.describe("Authentication", () => {
 	}) => {
 		const loginPage = new LoginPage(page);
 		await loginPage.goto();
-		await loginPage.openHomeFromHeader();
+		await loginPage.clickOpenHomeFromHeader();
 
 		await expect(page).toHaveURL(/\/$/);
 	});
@@ -26,7 +26,7 @@ test.describe("Authentication", () => {
 	}) => {
 		const loginPage = new LoginPage(page);
 		await loginPage.goto();
-		await loginPage.submit();
+		await loginPage.clickSubmit();
 
 		await expect(loginPage.errorMessage).toHaveText(
 			"Enter your email and password",
@@ -38,7 +38,7 @@ test.describe("Authentication", () => {
 		await loginPage.goto();
 		await loginPage.enterEmail("wrong@kainos.com");
 		await loginPage.enterPassword("wrong-password");
-		await loginPage.submit();
+		await loginPage.clickSubmit();
 
 		await expect(loginPage.errorMessage).toHaveText(
 			"Invalid email or password",
@@ -52,7 +52,7 @@ test.describe("Authentication", () => {
 		await loginPage.goto();
 		await loginPage.enterEmail(testUser.email);
 		await loginPage.enterPassword(testUser.password);
-		await loginPage.submit();
+		await loginPage.clickSubmit();
 
 		await expect(page).toHaveURL(urls.jobRoles);
 		await expect(new JobRolesListPage(page).heading).toBeVisible();
@@ -65,7 +65,7 @@ test.describe("Authentication", () => {
 		await loginPage.goto();
 		await loginPage.enterEmail(testUser.email);
 		await loginPage.enterPassword(testUser.password);
-		await loginPage.submit();
+		await loginPage.clickSubmit();
 
 		await loginPage.goto();
 		await expect(page).toHaveURL(urls.jobRoles);
@@ -78,7 +78,7 @@ test.describe("Authentication", () => {
 		await loginPage.goto();
 		await loginPage.enterEmail(testUser.email);
 		await loginPage.enterPassword(testUser.password);
-		await loginPage.submit();
+		await loginPage.clickSubmit();
 
 		await new JobRolesListPage(page).signOut();
 		await expect(page).toHaveURL(urls.login);

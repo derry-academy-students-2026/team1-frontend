@@ -53,19 +53,19 @@ export class BasePage {
 		await this.skipToMainContentLink.press("Enter");
 	}
 
-	async openHomeFromLogo() {
+	async clickOpenHomeFromLogo() {
 		await this.logoLink.click();
 	}
 
-	async openHomeFromHeader() {
+	async clickOpenHomeFromHeader() {
 		await this.headerHomeLink.click();
 	}
 
-	async openJobRolesFromHeader() {
+	async clickOpenJobRolesFromHeader() {
 		await this.headerJobRolesLink.click();
 	}
 
-	async openLoginFromHeader() {
+	async clickOpenLoginFromHeader() {
 		await this.headerSignInLink.click();
 	}
 
@@ -73,19 +73,19 @@ export class BasePage {
 		await this.headerSignOutLink.click();
 	}
 
-	async openHomeFromFooter() {
+	async clickOpenHomeFromFooter() {
 		await this.footerHomeLink.click();
 	}
 
-	async openJobRolesFromFooter() {
+	async clickOpenJobRolesFromFooter() {
 		await this.footerJobRolesLink.click();
 	}
 
-	async contactByEmail() {
+	async clickContactByEmail() {
 		await this.contactEmailLink.click();
 	}
 
-	async contactByPhone() {
+	async clickContactByPhone() {
 		await this.contactPhoneLink.click();
 	}
 }

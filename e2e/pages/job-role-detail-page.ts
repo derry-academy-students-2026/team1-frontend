@@ -36,15 +36,15 @@ export class JobRoleDetailPage extends BasePage {
 		await this.page.goto(`/job-roles/${id}`);
 	}
 
-	async returnToJobRoles() {
+	async clickReturnToJobRoles() {
 		await this.backLink.click();
 	}
 
-	async returnToJobRolesViaBreadcrumb() {
+	async clickReturnToJobRolesViaBreadcrumb() {
 		await this.breadcrumbBackLink.click();
 	}
 
-	async viewJobSpecification() {
+	async clickViewJobSpecification() {
 		await this.jobSpecificationLink.click();
 	}
 }
