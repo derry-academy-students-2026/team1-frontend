@@ -55,6 +55,18 @@ export const seededJobRoles: SeededJobRole[] = [
 	},
 ];
 
+export const openJobRoles = seededJobRoles.filter(
+	(role) => role.status === "open",
+);
+
+export const primaryOpenJobRole = openJobRoles[0];
+export const secondaryOpenJobRole = openJobRoles[1];
+
+export const urls = {
+	login: /\/login$/,
+	jobRoles: /\/job-roles$/,
+};
+
 /**
  * Reproduces the `en-GB` date formatting applied by the controllers so tests
  * can assert on the rendered closing date without duplicating magic strings.

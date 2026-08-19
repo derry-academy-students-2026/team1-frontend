@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { testUser } from "../fixtures/test-data";
+import { testUser, urls } from "../fixtures/test-data";
 import { JobRolesListPage } from "../pages/job-roles-list-page";
 import { LoginPage } from "../pages/login-page";
 
@@ -8,7 +8,17 @@ test.describe("Authentication", () => {
 		page,
 	}) => {
 		await page.goto("/job-roles");
-		await expect(page).toHaveURL(/\/login$/);
+		await expect(page).toHaveURL(urls.login);
+	});
+
+	test("returns to the home page through the login header", async ({
+		page,
+	}) => {
+		const loginPage = new LoginPage(page);
+		await loginPage.goto();
+		await loginPage.openHomeFromHeader();
+
+		await expect(page).toHaveURL(/\/$/);
 	});
 
 	test("shows an error when the login form is submitted empty", async ({
@@ -16,7 +26,7 @@ test.describe("Authentication", () => {
 	}) => {
 		const loginPage = new LoginPage(page);
 		await loginPage.goto();
-		await loginPage.submitButton.click();
+		await loginPage.submit();
 
 		await expect(loginPage.errorMessage).toHaveText(
 			"Enter your email and password",
@@ -26,7 +36,9 @@ test.describe("Authentication", () => {
 	test("shows an error for invalid credentials", async ({ page }) => {
 		const loginPage = new LoginPage(page);
 		await loginPage.goto();
-		await loginPage.login("wrong@kainos.com", "wrong-password");
+		await loginPage.enterEmail("wrong@kainos.com");
+		await loginPage.enterPassword("wrong-password");
+		await loginPage.submit();
 
 		await expect(loginPage.errorMessage).toHaveText(
 			"Invalid email or password",
@@ -38,9 +50,11 @@ test.describe("Authentication", () => {
 	}) => {
 		const loginPage = new LoginPage(page);
 		await loginPage.goto();
-		await loginPage.login(testUser.email, testUser.password);
+		await loginPage.enterEmail(testUser.email);
+		await loginPage.enterPassword(testUser.password);
+		await loginPage.submit();
 
-		await expect(page).toHaveURL(/\/job-roles$/);
+		await expect(page).toHaveURL(urls.jobRoles);
 		await expect(new JobRolesListPage(page).heading).toBeVisible();
 	});
 
@@ -49,10 +63,12 @@ test.describe("Authentication", () => {
 	}) => {
 		const loginPage = new LoginPage(page);
 		await loginPage.goto();
-		await loginPage.login(testUser.email, testUser.password);
+		await loginPage.enterEmail(testUser.email);
+		await loginPage.enterPassword(testUser.password);
+		await loginPage.submit();
 
 		await loginPage.goto();
-		await expect(page).toHaveURL(/\/job-roles$/);
+		await expect(page).toHaveURL(urls.jobRoles);
 	});
 
 	test("logs out and blocks further access to protected pages", async ({
@@ -60,12 +76,14 @@ test.describe("Authentication", () => {
 	}) => {
 		const loginPage = new LoginPage(page);
 		await loginPage.goto();
-		await loginPage.login(testUser.email, testUser.password);
+		await loginPage.enterEmail(testUser.email);
+		await loginPage.enterPassword(testUser.password);
+		await loginPage.submit();
 
-		await page.getByRole("link", { name: "Sign out" }).click();
-		await expect(page).toHaveURL(/\/login$/);
+		await new JobRolesListPage(page).signOut();
+		await expect(page).toHaveURL(urls.login);
 
 		await page.goto("/job-roles");
-		await expect(page).toHaveURL(/\/login$/);
+		await expect(page).toHaveURL(urls.login);
 	});
 });
