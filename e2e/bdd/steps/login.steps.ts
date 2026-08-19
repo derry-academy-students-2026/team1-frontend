@@ -21,7 +21,7 @@ const BASE_URL = process.env.BASE_URL ?? "http://localhost:3000";
 
 setDefaultTimeout(15_000);
 
-class CustomWorld extends World {
+export class CustomWorld extends World {
 	page!: Page;
 	homePage!: HomePage;
 	loginPage!: LoginPage;
