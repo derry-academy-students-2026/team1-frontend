@@ -11,7 +11,3 @@ Feature: Login
     And enters the password "Password123!"
     Then clicks the login button
     Then the user is logged in and taken to the job-roles page
-
-    
-
- 
