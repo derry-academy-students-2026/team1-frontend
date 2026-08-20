@@ -1,0 +1,79 @@
+{% extends "base.njk" %}
+
+{% block title %}Create an account | Kainos careers{% endblock %}
+
+{% block bodyClass %}page-register{% endblock %}
+
+{% block hero %}
+	<h1>Create an account</h1>
+	<p class="hero__subtitle">Create an account to apply for Kainos roles.</p>
+{% endblock %}
+
+{% block content %}
+	<div class="page-content">
+		<section class="card login-card" aria-labelledby="register-heading">
+			<h2 id="register-heading">Create an account</h2>
+			<p class="form-intro">Use your email address to get started.</p>
+
+			{% if error %}
+				<p class="form-error" id="form-error" role="alert">{{ error }}</p>
+			{% else %}
+				<p class="form-error" id="form-error" role="alert" hidden></p>
+			{% endif %}
+
+			<form method="post" action="/register" novalidate>
+				<div class="form-group">
+					<label for="email">Email address</label>
+					<span class="form-hint" id="email-hint">For example, name@kainos.com</span>
+					<input type="email" id="email" name="email" autocomplete="email" aria-describedby="email-hint" value="{{ email | default('') }}" required />
+				</div>
+
+				<div class="form-group">
+					<label for="password">Password</label>
+					<span class="form-hint" id="password-hint">Must be more than 8 characters and include an uppercase letter, a lowercase letter, and a special character.</span>
+					<input type="password" id="password" name="password" autocomplete="new-password" aria-describedby="password-hint" required />
+				</div>
+
+				<div class="form-group">
+					<label for="confirmPassword">Confirm password</label>
+					<input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" required />
+				</div>
+
+				<button type="submit" class="button button--submit">Create account</button>
+				<p class="form-link"><a href="/login">Already have an account? Sign in</a></p>
+			</form>
+		</section>
+	</div>
+
+	<script>
+		const registrationForm = document.querySelector('form[action="/register"]');
+		const registrationError = document.querySelector("#form-error");
+		const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		const passwordPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[^A-Za-z0-9]).{9,}$/;
+
+		registrationForm?.addEventListener("submit", (event) => {
+			const email = document.querySelector("#email").value.trim();
+			const password = document.querySelector("#password").value;
+			const confirmPassword = document.querySelector("#confirmPassword").value;
+			let message = "";
+
+			if (!email || !password) {
+				message = "Enter your email and password";
+			} else if (!emailPattern.test(email)) {
+				message = "Enter a valid email address";
+			} else if (!passwordPattern.test(password)) {
+				message = "Password must be more than 8 characters and include an uppercase letter, a lowercase letter, and a special character";
+			} else if (!confirmPassword) {
+				message = "Confirm your password";
+			} else if (password !== confirmPassword) {
+				message = "Passwords do not match";
+			}
+
+			if (message) {
+				event.preventDefault();
+				registrationError.textContent = message;
+				registrationError.hidden = false;
+			}
+		});
+	</script>
+{% endblock %}

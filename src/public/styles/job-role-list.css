@@ -704,6 +704,17 @@ input:focus-visible {
 	padding: 0.85rem 1rem;
 }
 
+.form-link {
+	margin-top: 1rem;
+	text-align: center;
+}
+
+.form-link a {
+	color: var(--kainos-blue);
+	font-weight: 700;
+	text-decoration: underline;
+}
+
 .site-footer {
 	background: var(--kainos-dark-green);
 	color: var(--kainos-white);
