@@ -4,7 +4,12 @@ import { z } from "zod";
 const registerSchema = z
 	.object({
 		email: z.string().email("Enter a valid email address"),
-		password: z.string().min(8, "Password must be at least 8 characters"),
+		password: z
+			.string()
+			.min(8)
+			.regex(/[A-Z]/)
+			.regex(/[a-z]/)
+			.regex(/[^A-Za-z0-9]/),
 		confirmPassword: z.string().min(1),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
@@ -29,8 +34,8 @@ export function validateRegistration(
 	const message =
 		error?.path[0] === "email" && error.code === "invalid_format"
 			? "Enter a valid email address"
-			: error?.path[0] === "password" && error.code === "too_small"
-				? "Password must be at least 8 characters"
+			: error?.path[0] === "password"
+				? "Password must be at least 8 characters and include an uppercase letter, a lowercase letter, and a special character"
 				: error?.path[0] === "confirmPassword"
 					? "Passwords do not match"
 					: "Enter your email and password";

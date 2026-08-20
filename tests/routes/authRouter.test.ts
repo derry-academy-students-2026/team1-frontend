@@ -122,6 +122,20 @@ describe("POST /register", () => {
 		expect(response.text).toContain("Password must be at least 8 characters");
 	});
 
+	it("should reject a registration password missing required character types", async () => {
+		const response = await request(app).post("/register").type("form").send({
+			email: "newuser@kainos.com",
+			password: "lowercase123!",
+			confirmPassword: "lowercase123!",
+		});
+
+		expect(authApiService.register).not.toHaveBeenCalled();
+		expect(response.status).toBe(200);
+		expect(response.text).toContain(
+			"Password must be at least 8 characters and include an uppercase letter, a lowercase letter, and a special character",
+		);
+	});
+
 	it("should re-render the registration page when required fields are missing", async () => {
 		const response = await request(app)
 			.post("/register")
