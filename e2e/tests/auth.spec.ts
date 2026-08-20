@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { expect, test } from "@playwright/test";
 import { testUser, urls } from "../fixtures/test-data";
 import { JobRolesListPage } from "../pages/job-roles-list-page";
@@ -89,6 +90,22 @@ test.describe("Authentication", () => {
 			"Passwords do not match",
 		);
 		await expect(page).toHaveURL(/\/register$/);
+	});
+
+	test("registers successfully and reaches the job roles list", async ({
+		page,
+	}) => {
+		const registerPage = new RegisterPage(page);
+		const email = `registration-${randomUUID()}@example.com`;
+
+		await registerPage.goto();
+		await registerPage.enterEmail(email);
+		await registerPage.enterPassword("Password123!");
+		await registerPage.enterConfirmation("Password123!");
+		await registerPage.clickSubmit();
+
+		await expect(page).toHaveURL(urls.jobRoles);
+		await expect(new JobRolesListPage(page).heading).toBeVisible();
 	});
 
 	test("logs in successfully and reaches the job roles list", async ({

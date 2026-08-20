@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../../src/services/authApiService.js", () => ({
 	login: vi.fn(),
+	register: vi.fn(),
 }));
 
 import app from "../../src/app.js";
@@ -57,6 +58,64 @@ describe("POST /login", () => {
 
 		expect(response.status).toBe(200);
 		expect(response.text).toContain("Invalid email or password");
+	});
+});
+
+describe("GET /register", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	it("should return 200 OK and render the registration page", async () => {
+		const response = await request(app).get("/register");
+
+		expect(response.status).toBe(200);
+		expect(response.text).toContain("Create an account");
+	});
+});
+
+describe("POST /register", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	it("should redirect to /job-roles on successful registration", async () => {
+		vi.mocked(authApiService.register).mockResolvedValue({
+			token: "new.jwt.token",
+		});
+
+		const response = await request(app).post("/register").type("form").send({
+			email: "newuser@kainos.com",
+			password: "Password123!",
+			confirmPassword: "Password123!",
+		});
+
+		expect(authApiService.register).toHaveBeenCalledWith(
+			"newuser@kainos.com",
+			"Password123!",
+		);
+		expect(response.status).toBe(302);
+		expect(response.headers.location).toBe("/job-roles");
+	});
+
+	it("should re-render the registration page with the backend validation message", async () => {
+		vi.mocked(authApiService.register).mockRejectedValue(
+			Object.assign(new Error("Request failed with status 400"), {
+				response: {
+					status: 400,
+					data: { message: "Enter a valid email address" },
+				},
+			}),
+		);
+
+		const response = await request(app).post("/register").type("form").send({
+			email: "bad-email",
+			password: "Password123!",
+			confirmPassword: "Password123!",
+		});
+
+		expect(response.status).toBe(200);
+		expect(response.text).toContain("Enter a valid email address");
 	});
 });
 
