@@ -3,16 +3,8 @@ import Logger from "../lib/logger.js";
 import * as authApiService from "../services/authApiService.js";
 
 export class AuthController {
-	/**
-	 * Initializes the controller with an auth service dependency.
-	 * @param authApiServiceImpl - Service instance for authenticating users (injectable for testing)
-	 */
 	constructor(private readonly authApiServiceImpl = authApiService) {}
 
-	/**
-	 * Handles GET /login by rendering the login page.
-	 * Redirects already-authenticated users to the job roles list.
-	 */
 	showLogin(req: Request, res: Response) {
 		if (req.session.jwtToken) {
 			res.redirect("/job-roles");
@@ -21,10 +13,6 @@ export class AuthController {
 		res.render("login.njk");
 	}
 
-	/**
-	 * Handles GET /register by rendering the registration page.
-	 * Redirects already-authenticated users to the job roles list.
-	 */
 	showRegister(req: Request, res: Response) {
 		if (req.session.jwtToken) {
 			res.redirect("/job-roles");
@@ -32,7 +20,7 @@ export class AuthController {
 		}
 		res.render("register.njk");
 	}
-
+	
 	/**
 	 * Handles POST /login by validating input, authenticating with the backend,
 	 * and storing the returned JWT in the browser session.
@@ -67,9 +55,6 @@ export class AuthController {
 		}
 	}
 
-	/**
-	 * Handles POST /register by creating the account and storing the JWT.
-	 */
 	async register(req: Request, res: Response) {
 		Logger.debug("🌐 [POST /register] Received registration request");
 
@@ -107,9 +92,6 @@ export class AuthController {
 		}
 	}
 
-	/**
-	 * Handles GET /logout by clearing the session and redirecting to the login page.
-	 */
 	logout(req: Request, res: Response) {
 		req.session.destroy((error) => {
 			if (error) {
