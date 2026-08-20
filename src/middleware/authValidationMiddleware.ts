@@ -3,8 +3,8 @@ import { z } from "zod";
 
 const registerSchema = z
 	.object({
-		email: z.string().min(1),
-		password: z.string().min(1),
+		email: z.string().email("Enter a valid email address"),
+		password: z.string().min(8, "Password must be at least 8 characters"),
 		confirmPassword: z.string().min(1),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
@@ -25,16 +25,18 @@ export function validateRegistration(
 		return;
 	}
 
-	const hasMissingCredentials = result.error.issues.some(
-		(issue) =>
-			(issue.path[0] === "email" || issue.path[0] === "password") &&
-			issue.code === "too_small",
-	);
+	const error = result.error.issues[0];
+	const message =
+		error?.path[0] === "email" && error.code === "invalid_format"
+			? "Enter a valid email address"
+			: error?.path[0] === "password" && error.code === "too_small"
+				? "Password must be at least 8 characters"
+				: error?.path[0] === "confirmPassword"
+					? "Passwords do not match"
+					: "Enter your email and password";
 
 	res.render("register.njk", {
-		error: hasMissingCredentials
-			? "Enter your email and password"
-			: "Passwords do not match",
+		error: message,
 		email: typeof req.body.email === "string" ? req.body.email : "",
 	});
 }

@@ -98,24 +98,28 @@ describe("POST /register", () => {
 		expect(response.headers.location).toBe("/job-roles");
 	});
 
-	it("should re-render the registration page with the backend validation message", async () => {
-		vi.mocked(authApiService.register).mockRejectedValue(
-			Object.assign(new Error("Request failed with status 400"), {
-				response: {
-					status: 400,
-					data: { message: "Enter a valid email address" },
-				},
-			}),
-		);
-
+	it("should reject an invalid registration email before calling the API", async () => {
 		const response = await request(app).post("/register").type("form").send({
 			email: "bad-email",
 			password: "Password123!",
 			confirmPassword: "Password123!",
 		});
 
+		expect(authApiService.register).not.toHaveBeenCalled();
 		expect(response.status).toBe(200);
 		expect(response.text).toContain("Enter a valid email address");
+	});
+
+	it("should reject a short registration password before calling the API", async () => {
+		const response = await request(app).post("/register").type("form").send({
+			email: "newuser@kainos.com",
+			password: "Short1!",
+			confirmPassword: "Short1!",
+		});
+
+		expect(authApiService.register).not.toHaveBeenCalled();
+		expect(response.status).toBe(200);
+		expect(response.text).toContain("Password must be at least 8 characters");
 	});
 
 	it("should re-render the registration page when required fields are missing", async () => {
