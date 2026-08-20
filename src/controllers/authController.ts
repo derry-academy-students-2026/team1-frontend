@@ -20,7 +20,7 @@ export class AuthController {
 		}
 		res.render("register.njk");
 	}
-	
+
 	/**
 	 * Handles POST /login by validating input, authenticating with the backend,
 	 * and storing the returned JWT in the browser session.
