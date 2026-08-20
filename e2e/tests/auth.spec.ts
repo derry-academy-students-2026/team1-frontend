@@ -67,7 +67,7 @@ test.describe("Authentication", () => {
 		await registerPage.goto();
 		await registerPage.enterEmail("not-an-email");
 		await registerPage.enterPassword("weak");
-		await registerPage.enterConfirmation("different");
+		await registerPage.enterConfirmationPassword("different");
 		await registerPage.clickSubmit();
 
 		await expect(registerPage.errorMessage).toHaveText(
@@ -83,7 +83,7 @@ test.describe("Authentication", () => {
 		await registerPage.goto();
 		await registerPage.enterEmail("new-user@example.com");
 		await registerPage.enterPassword("Password123!");
-		await registerPage.enterConfirmation("Different123!");
+		await registerPage.enterConfirmationPassword("Different123!");
 		await registerPage.clickSubmit();
 
 		await expect(registerPage.errorMessage).toHaveText(
@@ -101,7 +101,7 @@ test.describe("Authentication", () => {
 		await registerPage.goto();
 		await registerPage.enterEmail(email);
 		await registerPage.enterPassword("Password123!");
-		await registerPage.enterConfirmation("Password123!");
+		await registerPage.enterConfirmationPassword("Password123!");
 		await registerPage.clickSubmit();
 
 		await expect(page).toHaveURL(urls.jobRoles);

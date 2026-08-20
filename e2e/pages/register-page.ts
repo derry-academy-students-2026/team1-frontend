@@ -29,7 +29,7 @@ export class RegisterPage extends BasePage {
 		await this.passwordInput.fill(password);
 	}
 
-	async enterConfirmation(password: string) {
+	async enterConfirmationPassword(password: string) {
 		await this.confirmPasswordInput.fill(password);
 	}
 
