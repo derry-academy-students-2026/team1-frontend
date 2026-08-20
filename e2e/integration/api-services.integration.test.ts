@@ -6,6 +6,7 @@ import {
 	getJobRoleById,
 	getJobRoles,
 } from "../../src/services/jobRoleApiService.js";
+import { validEmail, validPassword } from "../../utils/constants.js";
 
 const mockToken = "mock-backend-token";
 const mockJobRoles = [
@@ -53,8 +54,8 @@ describe("frontend API services with a mock backend", () => {
 					};
 
 					if (
-						credentials.email === "test1@example.com" &&
-						credentials.password === "Password123!"
+						credentials.email === validEmail &&
+						credentials.password === validPassword
 					) {
 						sendJson(response, 200, {
 							token: mockToken,
@@ -119,12 +120,12 @@ describe("frontend API services with a mock backend", () => {
 	});
 
 	it("authenticates and retrieves protected job roles through HTTP", async () => {
-		const authenticatedUser = await login("test1@example.com", "Password123!");
+		const authenticatedUser = await login(validEmail, validPassword);
 		const jobRoles = await getJobRoles(authenticatedUser.token);
 
 		expect(authenticatedUser).toEqual({
 			token: mockToken,
-			user: { id: 1, email: "test1@example.com" },
+			user: { id: 1, email: validEmail },
 		});
 		expect(receivedAuthorization).toBe(`Bearer ${mockToken}`);
 		expect(jobRoles).toEqual(mockJobRoles);
