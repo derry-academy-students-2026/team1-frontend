@@ -6,6 +6,7 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "vitest run --dir tests",
+		"test:integration": "vitest run --dir e2e/integration",
 		"e2e": "playwright test",
 		"pretest:bdd": "npm install",
 		"test:bdd": "NODE_OPTIONS=--import=tsx cucumber-js",
