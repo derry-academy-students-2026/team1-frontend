@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { testUser, urls } from "../fixtures/test-data";
 import { JobRolesListPage } from "../pages/job-roles-list-page";
 import { LoginPage } from "../pages/login-page";
+import { RegisterPage } from "../pages/register-page";
 
 test.describe("Authentication", () => {
 	test("redirects unauthenticated users away from the job roles list", async ({
@@ -43,6 +44,51 @@ test.describe("Authentication", () => {
 		await expect(loginPage.errorMessage).toHaveText(
 			"Invalid email or password",
 		);
+	});
+
+	test("shows the registration form and link to sign in", async ({ page }) => {
+		const registerPage = new RegisterPage(page);
+		await registerPage.goto();
+
+		await expect(
+			page.getByRole("heading", { name: "Create an account", level: 1 }),
+		).toBeVisible();
+		await expect(
+			page.getByRole("link", { name: "Already have an account? Sign in" }),
+		).toHaveAttribute("href", "/login");
+		await expect(
+			page.getByText(/Must be more than 8 characters/),
+		).toBeVisible();
+	});
+
+	test("validates registration fields before submitting", async ({ page }) => {
+		const registerPage = new RegisterPage(page);
+		await registerPage.goto();
+		await registerPage.enterEmail("not-an-email");
+		await registerPage.enterPassword("weak");
+		await registerPage.enterConfirmation("different");
+		await registerPage.clickSubmit();
+
+		await expect(registerPage.errorMessage).toHaveText(
+			"Enter a valid email address",
+		);
+		await expect(page).toHaveURL(/\/register$/);
+	});
+
+	test("validates password confirmation before submitting", async ({
+		page,
+	}) => {
+		const registerPage = new RegisterPage(page);
+		await registerPage.goto();
+		await registerPage.enterEmail("new-user@example.com");
+		await registerPage.enterPassword("Password123!");
+		await registerPage.enterConfirmation("Different123!");
+		await registerPage.clickSubmit();
+
+		await expect(registerPage.errorMessage).toHaveText(
+			"Passwords do not match",
+		);
+		await expect(page).toHaveURL(/\/register$/);
 	});
 
 	test("logs in successfully and reaches the job roles list", async ({

@@ -15,6 +15,16 @@ router.get("/login", (req, res) => controller.showLogin(req, res));
 router.post("/login", (req, res) => controller.login(req, res));
 
 /**
+ * Route for rendering the registration page.
+ */
+router.get("/register", (req, res) => controller.showRegister(req, res));
+
+/**
+ * Route for submitting a new user's registration.
+ */
+router.post("/register", (req, res) => controller.register(req, res));
+
+/**
  * Route for logging out and clearing the session.
  */
 router.get("/logout", (req, res) => controller.logout(req, res));

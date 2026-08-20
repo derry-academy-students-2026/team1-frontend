@@ -22,6 +22,18 @@ export class AuthController {
 	}
 
 	/**
+	 * Handles GET /register by rendering the registration page.
+	 * Redirects already-authenticated users to the job roles list.
+	 */
+	showRegister(req: Request, res: Response) {
+		if (req.session.jwtToken) {
+			res.redirect("/job-roles");
+			return;
+		}
+		res.render("register.njk");
+	}
+
+	/**
 	 * Handles POST /login by validating input, authenticating with the backend,
 	 * and storing the returned JWT in the browser session.
 	 */
@@ -51,6 +63,67 @@ export class AuthController {
 			Logger.warn(`Login failed for ${email}: ${message}`);
 			res.render("login.njk", {
 				error: "Invalid email or password",
+			});
+		}
+	}
+
+	/**
+	 * Handles POST /register by validating input, creating the account, and storing the JWT.
+	 */
+	async register(req: Request, res: Response) {
+		Logger.debug("🌐 [POST /register] Received registration request");
+
+		const { email, password, confirmPassword } = req.body as {
+			email?: string;
+			password?: string;
+			confirmPassword?: string;
+		};
+
+		if (!email || !password) {
+			Logger.warn(
+				"⚠️  [POST /register] Missing email or password | Status: 400",
+			);
+			res.render("register.njk", {
+				error: "Enter your email and password",
+				email: email ?? "",
+			});
+			return;
+		}
+
+		if (!confirmPassword || confirmPassword !== password) {
+			Logger.warn("⚠️  [POST /register] Passwords did not match | Status: 400");
+			res.render("register.njk", {
+				error: "Passwords do not match",
+				email,
+			});
+			return;
+		}
+
+		try {
+			const { token } = await this.authApiServiceImpl.register(email, password);
+			req.session.jwtToken = token;
+			Logger.info("✅ [POST /register] Registration successful | Status: 302");
+			res.redirect("/job-roles");
+		} catch (error) {
+			const axiosError =
+				error && typeof error === "object" && "response" in error
+					? (error as {
+							response?: { status?: number; data?: { message?: string } };
+						})
+					: undefined;
+			const backendMessage = axiosError?.response?.data?.message;
+			const status = axiosError?.response?.status;
+			const message =
+				status === 400 || status === 409
+					? (backendMessage ?? "Something went wrong, please try again")
+					: "Something went wrong, please try again";
+
+			Logger.warn(
+				`Registration failed for ${email}: ${status ?? "unknown status"} ${message}`,
+			);
+			res.render("register.njk", {
+				error: message,
+				email,
 			});
 		}
 	}
