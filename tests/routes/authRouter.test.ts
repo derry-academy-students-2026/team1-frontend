@@ -117,6 +117,29 @@ describe("POST /register", () => {
 		expect(response.status).toBe(200);
 		expect(response.text).toContain("Enter a valid email address");
 	});
+
+	it("should re-render the registration page when required fields are missing", async () => {
+		const response = await request(app)
+			.post("/register")
+			.type("form")
+			.send({ email: "newuser@kainos.com" });
+
+		expect(authApiService.register).not.toHaveBeenCalled();
+		expect(response.status).toBe(200);
+		expect(response.text).toContain("Enter your email and password");
+	});
+
+	it("should re-render the registration page when passwords do not match", async () => {
+		const response = await request(app).post("/register").type("form").send({
+			email: "newuser@kainos.com",
+			password: "Password123!",
+			confirmPassword: "Password456!",
+		});
+
+		expect(authApiService.register).not.toHaveBeenCalled();
+		expect(response.status).toBe(200);
+		expect(response.text).toContain("Passwords do not match");
+	});
 });
 
 describe("GET /logout", () => {

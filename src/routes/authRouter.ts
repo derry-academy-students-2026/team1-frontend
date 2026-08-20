@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/authController.js";
+import { validateRegistration } from "../middleware/authValidationMiddleware.js";
 
 const router = Router();
 const controller = new AuthController();
@@ -22,7 +23,9 @@ router.get("/register", (req, res) => controller.showRegister(req, res));
 /**
  * Route for submitting a new user's registration.
  */
-router.post("/register", (req, res) => controller.register(req, res));
+router.post("/register", validateRegistration, (req, res) =>
+	controller.register(req, res),
+);
 
 /**
  * Route for logging out and clearing the session.

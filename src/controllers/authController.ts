@@ -68,36 +68,15 @@ export class AuthController {
 	}
 
 	/**
-	 * Handles POST /register by validating input, creating the account, and storing the JWT.
+	 * Handles POST /register by creating the account and storing the JWT.
 	 */
 	async register(req: Request, res: Response) {
 		Logger.debug("🌐 [POST /register] Received registration request");
 
-		const { email, password, confirmPassword } = req.body as {
-			email?: string;
-			password?: string;
-			confirmPassword?: string;
+		const { email, password } = req.body as {
+			email: string;
+			password: string;
 		};
-
-		if (!email || !password) {
-			Logger.warn(
-				"⚠️  [POST /register] Missing email or password | Status: 400",
-			);
-			res.render("register.njk", {
-				error: "Enter your email and password",
-				email: email ?? "",
-			});
-			return;
-		}
-
-		if (!confirmPassword || confirmPassword !== password) {
-			Logger.warn("⚠️  [POST /register] Passwords did not match | Status: 400");
-			res.render("register.njk", {
-				error: "Passwords do not match",
-				email,
-			});
-			return;
-		}
 
 		try {
 			const { token } = await this.authApiServiceImpl.register(email, password);
