@@ -72,8 +72,24 @@ outside local development.
 npm run build
 ```
 ## Testing
+Unit tests:
 ```bash
 npm test
+```
+
+Integration tests:
+```bash
+npm run test:integration
+```
+
+BDD tests:
+```bash
+npm run test:bdd
+npm run test:bdd:report
+```
+
+Test UI and coverage:
+```bash
 npm run test:ui
 npm run test:coverage
 ```
