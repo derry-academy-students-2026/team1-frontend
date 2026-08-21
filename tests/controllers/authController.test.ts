@@ -72,12 +72,19 @@ describe("AuthController", () => {
 			const authApiService = {
 				login: vi.fn().mockResolvedValue({
 					token: "signed.jwt.token",
-					user: { id: 1, email: "user@kainos.com" },
+					user: {
+						id: 1,
+						email: "user@kainos.com",
+						role: "RECRUITMENT_ADMIN",
+					},
 				}),
 			};
 			const controller = new AuthController(authApiService as never);
 
-			const session: { jwtToken?: string } = {};
+			const session: {
+				jwtToken?: string;
+				user?: { id: number; email: string; role?: string };
+			} = {};
 			const req = {
 				body: { email: "user@kainos.com", password: "Password123!" },
 				session,
@@ -93,6 +100,11 @@ describe("AuthController", () => {
 				"Password123!",
 			);
 			expect(session.jwtToken).toBe("signed.jwt.token");
+			expect(session.user).toEqual({
+				id: 1,
+				email: "user@kainos.com",
+				role: "RECRUITMENT_ADMIN",
+			});
 			expect(redirect).toHaveBeenCalledWith("/job-roles");
 			expect(render).not.toHaveBeenCalled();
 		});

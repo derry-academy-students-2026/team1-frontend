@@ -8,11 +8,12 @@ const AUTH_REGISTER_PATH = process.env.AUTH_REGISTER_PATH ?? "/auth/register";
 
 export interface LoginResult {
 	token: string;
-	user: AuthenticatedUser;
+	user?: AuthenticatedUser;
 }
 
 export interface RegisterResult {
 	token: string;
+	user?: AuthenticatedUser;
 }
 
 /**

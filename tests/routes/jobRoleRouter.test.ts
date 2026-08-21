@@ -11,6 +11,10 @@ vi.mock("../../src/services/authApiService.js", () => ({
 }));
 
 import app from "../../src/app.js";
+import {
+	USER_ROLES,
+	type UserRole,
+} from "../../src/models/authenticatedUser.js";
 import type { JobRole } from "../../src/models/jobRole.js";
 import * as authApiService from "../../src/services/authApiService.js";
 import * as jobRoleApiService from "../../src/services/jobRoleApiService.js";
@@ -18,11 +22,11 @@ import * as jobRoleApiService from "../../src/services/jobRoleApiService.js";
 const TEST_TOKEN = "test-jwt-token";
 
 /** Logs in through the real session flow so requests carry a JWT. */
-async function signedInAgent() {
+async function signedInAgent(role: UserRole = USER_ROLES.APPLICANT) {
 	const agent = request.agent(app);
 	vi.mocked(authApiService.login).mockResolvedValue({
 		token: TEST_TOKEN,
-		user: { id: 1, email: "test1@example.com" },
+		user: { id: 1, email: "test1@example.com", role },
 	});
 	await agent
 		.post("/login")
@@ -77,6 +81,20 @@ describe("GET /job-roles", () => {
 		expect(response.text).toContain("Belfast");
 		expect(response.text).toContain('href="/job-roles/1"');
 	});
+
+	it.each([USER_ROLES.APPLICANT, USER_ROLES.RECRUITMENT_ADMIN] as const)(
+		"should allow a %s to view job roles",
+		async (role) => {
+			vi.mocked(jobRoleApiService.getJobRoles).mockResolvedValue(
+				mockPrismaJobRoles,
+			);
+
+			const response = await (await signedInAgent(role)).get("/job-roles");
+
+			expect(response.status).toBe(200);
+			expect(response.text).toContain("Current openings");
+		},
+	);
 
 	it("should redirect to /login when not signed in", async () => {
 		const response = await request(app).get("/job-roles");

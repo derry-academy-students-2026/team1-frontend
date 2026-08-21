@@ -74,3 +74,15 @@ Then(
 		await expect(this.jobRolesListPage.heading).toBeVisible();
 	},
 );
+
+Then(
+	"the page does not show create, update, or delete controls",
+	async function (this: CustomWorld) {
+		await expect(
+			this.page.getByRole("link", { name: /create|update|delete/i }),
+		).toHaveCount(0);
+		await expect(
+			this.page.getByRole("button", { name: /create|update|delete/i }),
+		).toHaveCount(0);
+	},
+);

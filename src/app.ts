@@ -60,9 +60,12 @@ app.use(
 );
 Logger.info("Session middleware registered");
 
-// Exposes login state to views without leaking the token itself
+// Exposes authentication state to views without leaking the token itself
 app.use((req, res, next) => {
 	res.locals.isAuthenticated = Boolean(req.session.jwtToken);
+	res.locals.userRole = req.session.user?.role;
+	res.locals.isRecruitmentAdmin =
+		req.session.user?.role === "RECRUITMENT_ADMIN";
 	next();
 });
 

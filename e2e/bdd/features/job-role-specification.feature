@@ -14,3 +14,7 @@ Feature: View job role specification
     Given the user is on the specification page for "Software Engineer"
     When the user clicks the back link
     Then the user is taken back to the job roles page
+
+  Scenario: Applicant has read-only access to job roles
+    Given the user is logged in and on the job roles page
+    Then the page does not show create, update, or delete controls

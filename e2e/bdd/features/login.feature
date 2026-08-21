@@ -25,4 +25,9 @@ Feature: Login
     |fake@example.com | Password123!|
     |test1@example.com | Password |
     |fake@example.com | Password |
+
+    Scenario: Unauthenticated user is redirected from protected job roles
+      Given the user is on the home page
+      When the user navigates directly to the job-roles page
+      Then the login page is displayed
  

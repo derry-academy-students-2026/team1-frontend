@@ -41,7 +41,11 @@ export class AuthController {
 		}
 
 		try {
-			const { token } = await this.authApiServiceImpl.login(email, password);
+			const { token, user } = await this.authApiServiceImpl.login(
+				email,
+				password,
+			);
+			req.session.user = user;
 			req.session.jwtToken = token;
 			Logger.info("✅ [POST /login] Login successful | Status: 302");
 			res.redirect("/job-roles");
@@ -63,7 +67,11 @@ export class AuthController {
 		};
 
 		try {
-			const { token } = await this.authApiServiceImpl.register(email, password);
+			const { token, user } = await this.authApiServiceImpl.register(
+				email,
+				password,
+			);
+			req.session.user = user;
 			req.session.jwtToken = token;
 			Logger.info("✅ [POST /register] Registration successful | Status: 302");
 			res.redirect("/job-roles");

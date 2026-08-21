@@ -32,6 +32,15 @@ test.describe("Job roles list", () => {
 		);
 	});
 
+	test("keeps the applicant job-role view read-only", async ({ page }) => {
+		await expect(
+			page.getByRole("link", { name: /create|update|delete/i }),
+		).toHaveCount(0);
+		await expect(
+			page.getByRole("button", { name: /create|update|delete/i }),
+		).toHaveCount(0);
+	});
+
 	test("returns home through the list page header", async ({ page }) => {
 		const listPage = new JobRolesListPage(page);
 		await listPage.clickOpenHomeFromHeader();

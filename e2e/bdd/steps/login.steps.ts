@@ -95,6 +95,13 @@ When("clicks the login button", async function (this: CustomWorld) {
 	await this.loginPage.clickSubmit();
 });
 
+When(
+	"the user navigates directly to the job-roles page",
+	async function (this: CustomWorld) {
+		await this.page.goto("/job-roles");
+	},
+);
+
 Then(
 	"the user is logged in and taken to the job-roles page",
 	async function (this: CustomWorld) {
