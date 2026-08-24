@@ -17,6 +17,7 @@ export interface SeededJobRole {
 	numberOfOpenPositions: number;
 	description: string;
 	responsibilities: string;
+	sharepointUrl: string;
 }
 
 export const seededJobRoles: SeededJobRole[] = [
@@ -30,6 +31,7 @@ export const seededJobRoles: SeededJobRole[] = [
 		numberOfOpenPositions: 1,
 		description: "Build and maintain product features.",
 		responsibilities: "Design, code, review, and deploy.",
+		sharepointUrl: "https://example.sharepoint.com/software-engineer",
 	},
 	{
 		roleName: "Test Engineer",
@@ -41,6 +43,7 @@ export const seededJobRoles: SeededJobRole[] = [
 		numberOfOpenPositions: 2,
 		description: "Own test strategy and quality gates.",
 		responsibilities: "Automate tests and report quality risks.",
+		sharepointUrl: "https://example.sharepoint.com/test-engineer",
 	},
 	{
 		roleName: "Project Manager",
@@ -52,6 +55,72 @@ export const seededJobRoles: SeededJobRole[] = [
 		numberOfOpenPositions: 1,
 		description: "Coordinate delivery across teams.",
 		responsibilities: "Plan milestones and manage stakeholders.",
+		sharepointUrl: "https://example.sharepoint.com/project-manager",
+	},
+	{
+		roleName: "Data Engineer",
+		location: "Belfast",
+		capability: "Data",
+		band: "Band 3",
+		status: "open",
+		closingDate: new Date("2026-09-01"),
+		numberOfOpenPositions: 2,
+		description: "Build and maintain data pipelines for analytics.",
+		responsibilities:
+			"Design ETL jobs, model data, and ensure data quality.",
+		sharepointUrl: "https://example.sharepoint.com/data-engineer",
+	},
+	{
+		roleName: "Frontend Developer",
+		location: "Derry",
+		capability: "Engineering",
+		band: "Band 2",
+		status: "open",
+		closingDate: new Date("2026-08-30"),
+		numberOfOpenPositions: 1,
+		description: "Build accessible, responsive user interfaces.",
+		responsibilities:
+			"Implement UI components and collaborate with designers.",
+		sharepointUrl: "https://example.sharepoint.com/frontend-developer",
+	},
+	{
+		roleName: "Product Manager",
+		location: "Belfast",
+		capability: "Product",
+		band: "Band 4",
+		status: "open",
+		closingDate: new Date("2026-09-15"),
+		numberOfOpenPositions: 1,
+		description: "Own the roadmap for a customer-facing product area.",
+		responsibilities:
+			"Define requirements, prioritise backlog, and work with stakeholders.",
+		sharepointUrl: "https://example.sharepoint.com/product-manager",
+	},
+	{
+		roleName: "DevOps Engineer",
+		location: "Gdansk",
+		capability: "Engineering",
+		band: "Band 3",
+		status: "open",
+		closingDate: new Date("2026-09-05"),
+		numberOfOpenPositions: 1,
+		description: "Improve deployment pipelines and platform reliability.",
+		responsibilities:
+			"Maintain CI/CD, monitor infrastructure, and automate operations.",
+		sharepointUrl: "https://example.sharepoint.com/devops-engineer",
+	},
+	{
+		roleName: "UX Designer",
+		location: "Derry",
+		capability: "Product",
+		band: "Band 2",
+		status: "closed",
+		closingDate: new Date("2026-08-01"),
+		numberOfOpenPositions: 1,
+		description: "Design end-to-end user experiences for new features.",
+		responsibilities:
+			"Run user research, produce wireframes, and validate prototypes.",
+		sharepointUrl: "https://example.sharepoint.com/ux-designer",
 	},
 ];
 
