@@ -43,8 +43,18 @@ export class AuthController {
 		try {
 			const { token } = await this.authApiServiceImpl.login(email, password);
 			req.session.jwtToken = token;
-			Logger.info("✅ [POST /login] Login successful | Status: 302");
-			res.redirect("/job-roles");
+			req.session.save((sessionError) => {
+				if (sessionError) {
+					Logger.error(`Failed to save login session: ${sessionError.message}`);
+					res.render("login.njk", {
+						error: "Unable to sign in, please try again",
+					});
+					return;
+				}
+
+				Logger.info("✅ [POST /login] Login successful | Status: 302");
+				res.redirect("/job-roles");
+			});
 		} catch (error) {
 			const message = error instanceof Error ? error.message : "Unknown error";
 			Logger.warn(`Login failed for ${email}: ${message}`);
@@ -65,8 +75,22 @@ export class AuthController {
 		try {
 			const { token } = await this.authApiServiceImpl.register(email, password);
 			req.session.jwtToken = token;
-			Logger.info("✅ [POST /register] Registration successful | Status: 302");
-			res.redirect("/job-roles");
+			req.session.save((sessionError) => {
+				if (sessionError) {
+					Logger.error(
+						`Failed to save registration session: ${sessionError.message}`,
+					);
+					res.render("register.njk", {
+						error: "Unable to create an account, please try again",
+					});
+					return;
+				}
+
+				Logger.info(
+					"✅ [POST /register] Registration successful | Status: 302",
+				);
+				res.redirect("/job-roles");
+			});
 		} catch (error) {
 			const axiosError =
 				error && typeof error === "object" && "response" in error

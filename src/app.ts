@@ -34,6 +34,11 @@ app.set("view engine", "html");
 
 Logger.info("App initialization started");
 
+const useSecureSessionCookie =
+	process.env.SESSION_COOKIE_SECURE === "true" ||
+	(process.env.SESSION_COOKIE_SECURE === undefined &&
+		process.env.NODE_ENV === "production");
+
 /**
  * Maps the /assets route to serve static files from the public directory.
  */
@@ -53,7 +58,7 @@ app.use(
 		saveUninitialized: false,
 		cookie: {
 			httpOnly: true,
-			secure: process.env.NODE_ENV === "production",
+			secure: useSecureSessionCookie,
 			sameSite: "lax",
 		},
 	}),
