@@ -65,9 +65,9 @@ docker build -t team1-frontend .
 Run it on port 3000, setting the backend URL reachable from the container:
 ```bash
 docker run --rm -p 3000:3000 \
-	-e API_BASE_URL="http://host.docker.internal:4000" \
-	-e SESSION_SECRET="replace-with-a-strong-random-value" \
-	team1-frontend
+  -e API_BASE_URL="http://host.docker.internal:4000" \
+  -e SESSION_SECRET="$(openssl rand -hex 32)" \
+  team1-frontend
 ```
 
 On macOS, `host.docker.internal` lets the container reach a backend running on
