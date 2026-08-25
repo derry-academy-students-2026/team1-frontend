@@ -54,6 +54,7 @@ code_reviews/
 
 # Terraform local files
 .terraform/
+*.terraform.lock.hcl
 *.tfstate
 *.tfstate.*
 crash.log
