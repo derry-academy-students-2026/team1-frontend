@@ -8,13 +8,28 @@ on:
 
 jobs:
   test:
+    name: Test and quality checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Display message
+        run: echo "CI workflow is running"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
       - run: npm ci
       - run: npm run lint
       - run: npm test
       - run: npm run test:integration
+
+  build:
+    name: Build container image
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build --tag team1-frontend:${{ github.sha }} .
