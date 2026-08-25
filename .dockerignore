@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+test-results
+playwright-report
+logs
+code_reviews
+e2e
+tests
+.git
+.env
+*.md

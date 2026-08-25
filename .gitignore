@@ -51,3 +51,16 @@ code_reviews/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Terraform local files
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+*.tfvars
+*.tfvars.json
