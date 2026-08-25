@@ -66,8 +66,7 @@ export const seededJobRoles: SeededJobRole[] = [
 		closingDate: new Date("2026-09-01"),
 		numberOfOpenPositions: 2,
 		description: "Build and maintain data pipelines for analytics.",
-		responsibilities:
-			"Design ETL jobs, model data, and ensure data quality.",
+		responsibilities: "Design ETL jobs, model data, and ensure data quality.",
 		sharepointUrl: "https://example.sharepoint.com/data-engineer",
 	},
 	{
@@ -79,8 +78,7 @@ export const seededJobRoles: SeededJobRole[] = [
 		closingDate: new Date("2026-08-30"),
 		numberOfOpenPositions: 1,
 		description: "Build accessible, responsive user interfaces.",
-		responsibilities:
-			"Implement UI components and collaborate with designers.",
+		responsibilities: "Implement UI components and collaborate with designers.",
 		sharepointUrl: "https://example.sharepoint.com/frontend-developer",
 	},
 	{
