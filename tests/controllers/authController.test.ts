@@ -77,7 +77,12 @@ describe("AuthController", () => {
 			};
 			const controller = new AuthController(authApiService as never);
 
-			const session: { jwtToken?: string } = {};
+			const session: {
+				jwtToken?: string;
+				save: (callback: (error?: Error) => void) => void;
+			} = {
+				save: (callback) => callback(),
+			};
 			const req = {
 				body: { email: "user@kainos.com", password: "Password123!" },
 				session,
@@ -148,7 +153,12 @@ describe("AuthController", () => {
 			};
 			const controller = new AuthController(authApiService as never);
 
-			const session: { jwtToken?: string } = {};
+			const session: {
+				jwtToken?: string;
+				save: (callback: (error?: Error) => void) => void;
+			} = {
+				save: (callback) => callback(),
+			};
 			const req = {
 				body: {
 					email: "newuser@kainos.com",

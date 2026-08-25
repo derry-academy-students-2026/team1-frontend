@@ -52,6 +52,32 @@ npm ci
 npm run dev
 ```
 The development server runs on `http://localhost:3000` by default.
+## Docker
+The Docker image uses a multi-stage build: it compiles the TypeScript application
+in a build image, then runs the compiled output with production dependencies
+only. The Nunjucks views and static assets are included in the runtime image.
+
+Build the image from the frontend directory:
+```bash
+docker build -t team1-frontend .
+```
+
+Run it on port 3000, setting the backend URL reachable from the container:
+```bash
+docker run --rm -p 3000:3000 \
+  -e API_BASE_URL="http://host.docker.internal:4000" \
+  -e SESSION_SECRET="$(openssl rand -hex 32)" \
+	-e SESSION_COOKIE_SECURE=false \
+  team1-frontend
+```
+
+On macOS, `host.docker.internal` lets the container reach a backend running on
+your host machine. If both applications are attached to the same Docker
+network, use the backend container's service name instead, for example
+`API_BASE_URL="http://team1-backend:4000"`. Open `http://localhost:3000` after
+the container starts. `SESSION_COOKIE_SECURE=false` is required when accessing
+the container directly over HTTP. For an HTTPS deployment, omit it or set it to
+`true`.
 ## Environment Variables
 Set these variables in a local `.env` file when needed:
 ```env
