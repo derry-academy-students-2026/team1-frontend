@@ -59,6 +59,7 @@ export default defineConfig({
 			PORT: String(APP_PORT),
 			API_BASE_URL: BACKEND_URL,
 			SESSION_SECRET: "e2e-test-session-secret",
+			SESSION_COOKIE_SECURE: "false",
 		},
 	},
 });

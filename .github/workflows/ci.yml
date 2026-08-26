@@ -5,8 +5,15 @@ permissions:
 
 on:
   push:
-    branches: [main, Set-up-CI-Pipeline-CM]
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
 
+env:
+  ACR_NAME: acraiacademy26
+  ACR_LOGIN_SERVER: acraiacademy26.azurecr.io
+  TF_VERSION: "1.15.8"
+  TF_ENVIRONMENT: dev
 
 jobs:
   test:
@@ -14,7 +21,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo "Hello from the frontend CI workflow!"
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -24,29 +30,140 @@ jobs:
       - run: npm run test:integration
 
   build:
-    name: Build container image
+    name: Build and push container image
     needs: test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Required so GitHub can mint the OIDC token used for federated Azure login.
+      id-token: write
+    outputs:
+      image-tags: ${{ steps.meta.outputs.tags }}
     env:
-      ACR_LOGIN_SERVER: acraiacademy26.azurecr.io
+      IMAGE_NAME: team1-frontend
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Log in to Azure
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+      # main -> latest + dev-<sha>; pull request -> pr-<number> so a PR image is pullable.
+      - name: Derive image tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=dev-${{ github.sha }},enable={{is_default_branch}}
+            type=ref,event=pr
+
+      # Images are only pushed from the repo itself; fork pull requests have no secrets.
+      - name: Decide whether to push
+        id: gate
+        run: |
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "push=true" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event_name }}" == "pull_request" && "${{ github.event.pull_request.head.repo.full_name }}" == "${{ github.repository }}" ]]; then
+            echo "push=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "push=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Log in to Azure (OIDC federated credential, no client secret)
+        if: steps.gate.outputs.push == 'true'
         uses: azure/login@v2
         with:
-          creds: >-
-            {"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Log in to Azure Container Registry
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: az acr login --name acraiacademy26
-      - name: Build Docker image
+        if: steps.gate.outputs.push == 'true'
+        run: az acr login --name ${{ env.ACR_NAME }}
+
+      - name: Build image
         uses: docker/build-push-action@v6
         with:
           context: .
-          tags: ${{ env.ACR_LOGIN_SERVER }}/team1-frontend:test-${{ github.sha }}
-          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          push: ${{ steps.gate.outputs.push == 'true' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Verify image is in ACR
+        if: steps.gate.outputs.push == 'true'
+        run: |
+          az acr repository show-tags \
+            --name "${{ env.ACR_NAME }}" \
+            --repository "${{ env.IMAGE_NAME }}" \
+            --orderby time_desc --top 10 --output table
+
+  terraform:
+    name: Terraform (dev)
+    needs: build
+    runs-on: ubuntu-latest
+    # Fork pull requests have no access to secrets, so Azure login would fail.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: read
+      # Required so GitHub can mint the OIDC token used for federated Azure login.
+      id-token: write
+    # Terraform state takes a lock, so never let two runs apply at the same time.
+    concurrency:
+      group: terraform-dev
+      cancel-in-progress: false
+    defaults:
+      run:
+        working-directory: my-infrastructure
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_USE_OIDC: "true"
+      ARM_USE_AZUREAD: "true"
+      TF_IN_AUTOMATION: "true"
+      TF_INPUT: "false"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Azure (OIDC federated credential, no client secret)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive
+
+      - name: Terraform init
+        run: terraform init -input=false -backend-config=backends/${{ env.TF_ENVIRONMENT }}.hcl
+
+      - name: Terraform validate
+        run: terraform validate -no-color
+
+      - name: Terraform plan
+        run: |
+          terraform plan -input=false -no-color \
+            -var-file=environments/${{ env.TF_ENVIRONMENT }}.tfvars \
+            -out=tfplan
+
+      - name: Upload plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-${{ env.TF_ENVIRONMENT }}-${{ github.sha }}
+          path: my-infrastructure/tfplan
+          retention-days: 5
+
+      # Apply is main-only: branches and pull requests stop at the plan above.
+      - name: Terraform apply
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: terraform apply -input=false -auto-approve -no-color tfplan

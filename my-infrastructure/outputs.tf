@@ -12,3 +12,8 @@ output "resource_group_location" {
   description = "Azure region where the resource group was created."
   value       = var.location
 }
+
+output "environment" {
+  description = "Environment this state file represents."
+  value       = var.environment
+}

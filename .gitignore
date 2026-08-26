@@ -52,11 +52,13 @@ code_reviews/
 /playwright/.cache/
 /playwright/.auth/
 
-# Terraform local files
+# Terraform local files (the .terraform.lock.hcl file is committed on purpose)
 .terraform/
-*.terraform.lock.hcl
 *.tfstate
 *.tfstate.*
+# Saved plans can contain resolved variable values.
+tfplan
+*.tfplan
 crash.log
 crash.*.log
 override.tf
@@ -65,3 +67,5 @@ override.tf.json
 *_override.tf.json
 *.tfvars
 *.tfvars.json
+# Non-secret per-environment inputs are committed so the pipeline can use them.
+!my-infrastructure/environments/*.tfvars
