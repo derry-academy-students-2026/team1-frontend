@@ -5,7 +5,7 @@ permissions:
 
 on:
   push:
-    branches: [main, Set-up-CI-Pipeline-CM]
+    branches: ["**"]
 
 
 jobs:
@@ -27,26 +27,117 @@ jobs:
     name: Build container image
     needs: test
     runs-on: ubuntu-latest
-    env:
-      ACR_LOGIN_SERVER: acraiacademy26.azurecr.io
     steps:
       - uses: actions/checkout@v4
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          tags: team1-frontend:${{ github.sha }}
+          outputs: type=docker,dest=/tmp/team1-frontend.tar
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: team1-frontend-image
+          path: /tmp/team1-frontend.tar
+          retention-days: 1
+
+  push-acr:
+    name: Push image to ACR
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      ACR_LOGIN_SERVER: acraiacademy26.azurecr.io
+    steps:
+      - name: Download image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: team1-frontend-image
+          path: /tmp
+      - name: Load image
+        run: docker load --input /tmp/team1-frontend.tar
       - name: Log in to Azure
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main'
         uses: azure/login@v2
         with:
           creds: >-
             {"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}
       - name: Log in to Azure Container Registry
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main'
         run: az acr login --name acraiacademy26
-      - name: Build Docker image
-        uses: docker/build-push-action@v6
+      - name: Tag and push image
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker tag team1-frontend:${{ github.sha }} ${{ env.ACR_LOGIN_SERVER }}/team1-frontend:${{ github.sha }}
+          docker tag team1-frontend:${{ github.sha }} ${{ env.ACR_LOGIN_SERVER }}/team1-frontend:latest
+          docker push ${{ env.ACR_LOGIN_SERVER }}/team1-frontend:${{ github.sha }}
+          docker push ${{ env.ACR_LOGIN_SERVER }}/team1-frontend:latest
+
+  terraform-plan:
+    name: Terraform plan (dev)
+    needs: push-acr
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: my-infrastructure
+    env:
+      ENVIRONMENT: dev
+    steps:
+      - uses: actions/checkout@v4
+      # runs on every branch (unlike push-acr's login), so all 4 AZURE_* secrets
+      # must exist as repository secrets - an env-scoped secret here resolves
+      # empty and fails with "Not all parameters are provided in 'creds'"
+      - name: Log in to Azure
+        uses: azure/login@v2
         with:
-          context: .
-          tags: ${{ env.ACR_LOGIN_SERVER }}/team1-frontend:test-${{ github.sha }}
-          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          creds: >-
+            {"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+      - name: Terraform init
+        run: terraform init -input=false -backend-config="key=team1-frontend-${{ env.ENVIRONMENT }}.terraform.tfstate"
+      - name: Terraform plan
+        run: terraform plan -input=false -var-file="environments/${{ env.ENVIRONMENT }}.tfvars" -out=tfplan
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-${{ env.ENVIRONMENT }}
+          path: my-infrastructure/tfplan
+          retention-days: 1
+
+  terraform-apply:
+    name: Terraform apply (dev)
+    needs: terraform-plan
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: my-infrastructure
+    env:
+      ENVIRONMENT: dev
+    steps:
+      - uses: actions/checkout@v4
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          creds: >-
+            {"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+      - name: Terraform init
+        run: terraform init -input=false -backend-config="key=team1-frontend-${{ env.ENVIRONMENT }}.terraform.tfstate"
+      - name: Download plan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan-${{ env.ENVIRONMENT }}
+          path: my-infrastructure
+      - name: Terraform apply
+        run: terraform apply -input=false -auto-approve tfplan
