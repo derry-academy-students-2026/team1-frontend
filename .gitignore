@@ -65,3 +65,6 @@ override.tf.json
 *_override.tf.json
 *.tfvars
 *.tfvars.json
+
+# ...except the checked-in per-environment configs used by CI (no secrets in these)
+!my-infrastructure/environments/*.tfvars
