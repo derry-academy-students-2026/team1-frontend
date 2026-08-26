@@ -88,6 +88,9 @@ jobs:
       ENVIRONMENT: dev
     steps:
       - uses: actions/checkout@v4
+      # runs on every branch (unlike push-acr's login), so all 4 AZURE_* secrets
+      # must exist as repository secrets - an env-scoped secret here resolves
+      # empty and fails with "Not all parameters are provided in 'creds'"
       - name: Log in to Azure
         uses: azure/login@v2
         with:
