@@ -35,19 +35,19 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Log in to Azure
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/Set-up-CI-Pipeline-CM')
         uses: azure/login@v2
         with:
           creds: >-
             {"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}
       - name: Log in to Azure Container Registry
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/Set-up-CI-Pipeline-CM')
         run: az acr login --name acraiacademy26
       - name: Build Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
-          tags: ${{ env.ACR_LOGIN_SERVER }}/team1-frontend:${{ github.sha }}
-          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          tags: ${{ env.ACR_LOGIN_SERVER }}/team1-frontend:test-${{ github.sha }}
+          push: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/Set-up-CI-Pipeline-CM') }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
