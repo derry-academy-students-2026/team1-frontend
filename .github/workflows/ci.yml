@@ -122,6 +122,8 @@ jobs:
         working-directory: my-infrastructure
     env:
       ENVIRONMENT: dev
+    outputs:
+      url: ${{ steps.url.outputs.url }}
     steps:
       - uses: actions/checkout@v4
       - name: Log in to Azure
@@ -142,3 +144,40 @@ jobs:
           path: my-infrastructure
       - name: Terraform apply
         run: terraform apply -input=false -auto-approve tfplan
+      - name: Publish app URL
+        id: url
+        run: |
+          URL="$(terraform output -raw frontend_url)"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Deployed frontend (${{ env.ENVIRONMENT }})"
+            echo ""
+            echo "- URL: $URL"
+            echo "- Image tag: \`${{ github.sha }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  verify-deployment:
+    name: Verify deployed app (dev)
+    needs: terraform-apply
+    runs-on: ubuntu-latest
+    steps:
+      # Fails the pipeline if the new revision deployed but is not serving.
+      - name: Wait for app to respond
+        env:
+          URL: ${{ needs.terraform-apply.outputs.url }}
+        run: |
+          for attempt in $(seq 1 10); do
+            if curl --fail --silent --show-error "$URL/health"; then
+              echo "App responded successfully on attempt $attempt"
+              exit 0
+            fi
+            echo "Attempt $attempt failed, retrying in 15s..."
+            sleep 15
+          done
+          echo "App never responded at $URL"
+          exit 1
+      - name: Publish result
+        if: always()
+        env:
+          URL: ${{ needs.terraform-apply.outputs.url }}
+        run: echo "Checked: $URL/health" >> "$GITHUB_STEP_SUMMARY"
