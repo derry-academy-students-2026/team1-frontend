@@ -1,25 +1,6 @@
-resource "azurerm_log_analytics_workspace" "container_apps" {
-  name                = "${var.project_name}-logs-${var.environment}"
-  location            = var.location
-  resource_group_name = module.resource_group.resource_group_name
-  sku                 = "PerGB2018"
-  retention_in_days   = var.log_retention_days
-
-  tags = {
-    environment = var.environment
-    project     = var.project_name
-  }
-}
-
-# Provides the shared network boundary, DNS suffix and TLS for apps running in it.
-resource "azurerm_container_app_environment" "apps" {
-  name                       = "${var.project_name}-env-${var.environment}"
-  location                   = var.location
-  resource_group_name        = module.resource_group.resource_group_name
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.container_apps.id
-
-  tags = {
-    environment = var.environment
-    project     = var.project_name
-  }
+# Owned by the backend repo. The frontend joins it because internal ingress is
+# only resolvable between apps in the same Container App environment.
+data "azurerm_container_app_environment" "apps" {
+  name                = var.container_app_environment_name
+  resource_group_name = var.container_app_environment_resource_group_name
 }

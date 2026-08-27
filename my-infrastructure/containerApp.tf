@@ -1,6 +1,6 @@
 resource "azurerm_container_app" "frontend" {
   name                         = "${var.project_name}-app-${var.environment}"
-  container_app_environment_id = azurerm_container_app_environment.apps.id
+  container_app_environment_id = data.azurerm_container_app_environment.apps.id
   resource_group_name          = module.resource_group.resource_group_name
   revision_mode                = "Single"
 
@@ -65,7 +65,7 @@ resource "azurerm_container_app" "frontend" {
 
       env {
         name  = "API_BASE_URL"
-        value = var.api_base_url
+        value = local.api_base_url
       }
 
       # Toggled per environment without rebuilding the image.
