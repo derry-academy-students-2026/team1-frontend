@@ -33,6 +33,9 @@ locals {
   # dev, prod, etc. all share this naming convention - adding an
   # environments/prod.tfvars file is all that's needed for a prod environment
   resource_group_name = "${var.resource_group_name}-${var.environment}-rg"
+
+  # Internal ingress, so this only resolves from inside the shared environment.
+  api_base_url = "https://${var.backend_app_name}.internal.${data.azurerm_container_app_environment.apps.default_domain}"
 }
 
 module "resource_group" {

@@ -39,10 +39,22 @@ variable "acr_resource_group_name" {
   default     = "rg-ai-academy-26"
 }
 
-variable "log_retention_days" {
-  description = "Days of container stdout/stderr retained in Log Analytics."
-  type        = number
-  default     = 30
+variable "container_app_environment_name" {
+  description = "Name of the shared Container App environment, created by the backend repo."
+  type        = string
+  default     = "team1-backend-dev-aca-env"
+}
+
+variable "container_app_environment_resource_group_name" {
+  description = "Resource group containing the shared Container App environment."
+  type        = string
+  default     = "team1-backend-dev-rg"
+}
+
+variable "backend_app_name" {
+  description = "Name of the backend Container App, used to build its internal URL."
+  type        = string
+  default     = "team1-backend-dev-app"
 }
 
 variable "session_secret_name" {
@@ -72,11 +84,6 @@ variable "container_port" {
   description = "Port the Express app listens on inside the container."
   type        = number
   default     = 3000
-}
-
-variable "api_base_url" {
-  description = "Base URL of the backend API. Must be reachable from this Container App environment."
-  type        = string
 }
 
 variable "min_replicas" {
