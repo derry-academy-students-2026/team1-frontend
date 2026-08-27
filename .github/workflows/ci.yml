@@ -180,4 +180,5 @@ jobs:
         if: always()
         env:
           URL: ${{ needs.terraform-apply.outputs.url }}
-        run: echo "Checked: $URL/health" >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          echo "Checked: $URL/health" >> "$GITHUB_STEP_SUMMARY"
