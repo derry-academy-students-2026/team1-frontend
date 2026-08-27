@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import session from "express-session";
 import nunjucks from "nunjucks";
+import { isRegistrationEnabled } from "./config/features.js";
 import morganMiddleware from "./config/morganMiddleware.js";
 import Logger from "./lib/logger.js";
 import authRouter from "./routes/authRouter.js";
@@ -68,6 +69,7 @@ Logger.info("Session middleware registered");
 // Exposes login state to views without leaking the token itself
 app.use((req, res, next) => {
 	res.locals.isAuthenticated = Boolean(req.session.jwtToken);
+	res.locals.features = { registration: isRegistrationEnabled() };
 	next();
 });
 

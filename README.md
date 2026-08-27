@@ -93,6 +93,34 @@ to `development`. `AUTH_LOGIN_PATH` defaults to `/auth/login` when unset.
 `SESSION_SECRET` must be set to a strong random value in production; a
 development fallback is used otherwise, but this should never be relied on
 outside local development.
+
+`FEATURE_REGISTRATION_ENABLED` toggles user registration and defaults to `true`.
+When `false`, `/register` returns 404 and the link is hidden on the login page.
+In Azure it is set from `feature_registration_enabled` in the environment's
+`.tfvars`, so it can be changed without rebuilding the image.
+
+## Azure deployment
+
+Infrastructure lives in `my-infrastructure/` and is applied by the CI pipeline.
+The frontend runs as an Azure Container App, pulling its image from ACR and
+reading `SESSION_SECRET` from Key Vault using a user-assigned managed identity.
+
+### Required manual step for a new environment
+
+Terraform creates the Key Vault but **does not create the secret inside it**.
+Before the first apply in any new environment, add the secret by hand:
+
+1. Open the vault `<project_name>-kv-<environment>` in the Azure portal
+   (for example `team1-frontend-kv-dev`)
+2. Go to **Objects → Secrets → + Generate/Import**
+3. Name it `session-secret` — this must match `var.session_secret_name`
+4. Use a long random value, for example from `openssl rand -base64 48`
+
+Skipping this step is not obvious: `terraform apply` succeeds, but every
+container revision then fails to start because the secret reference cannot be
+resolved. Rotating the secret requires restarting the revision, and logs every
+user out.
+
 ## Build
 ```bash
 npm run build

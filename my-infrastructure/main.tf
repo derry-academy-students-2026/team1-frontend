@@ -13,13 +13,20 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.0"
+      version = "~> 4.81.0"
     }
   }
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    key_vault {
+      # Azure refuses to switch an existing vault's permission model, so a
+      # replacement must purge rather than recover the soft-deleted vault.
+      purge_soft_delete_on_destroy    = true
+      recover_soft_deleted_key_vaults = false
+    }
+  }
 }
 
 locals {
