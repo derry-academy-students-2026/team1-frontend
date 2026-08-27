@@ -18,7 +18,8 @@
 			"!code_reviews/context",
 			"!playwright-report/index.html",
 			"!playwright-report/cucumber-report.html",
-			"!test-results"
+			"!test-results",
+			"!**/.terraform"
 		]
 	},
 	"linter": {

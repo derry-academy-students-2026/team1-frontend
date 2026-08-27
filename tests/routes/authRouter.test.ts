@@ -1,5 +1,5 @@
 import request from "supertest";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../../src/services/authApiService.js", () => ({
 	login: vi.fn(),
@@ -71,6 +71,54 @@ describe("GET /register", () => {
 
 		expect(response.status).toBe(200);
 		expect(response.text).toContain("Create an account");
+	});
+});
+
+describe("registration feature flag", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	afterEach(() => {
+		delete process.env.FEATURE_REGISTRATION_ENABLED;
+	});
+
+	it("should return 404 for GET /register when registration is disabled", async () => {
+		process.env.FEATURE_REGISTRATION_ENABLED = "false";
+
+		const response = await request(app).get("/register");
+
+		expect(response.status).toBe(404);
+	});
+
+	it("should return 404 for POST /register without calling the API when disabled", async () => {
+		process.env.FEATURE_REGISTRATION_ENABLED = "false";
+
+		const response = await request(app).post("/register").type("form").send({
+			email: "newuser@kainos.com",
+			password: "Password123!",
+			confirmPassword: "Password123!",
+		});
+
+		expect(response.status).toBe(404);
+		expect(authApiService.register).not.toHaveBeenCalled();
+	});
+
+	it("should hide the register link on the login page when disabled", async () => {
+		process.env.FEATURE_REGISTRATION_ENABLED = "false";
+
+		const response = await request(app).get("/login");
+
+		expect(response.status).toBe(200);
+		expect(response.text).not.toContain('href="/register"');
+	});
+
+	it("should show the register link on the login page when enabled", async () => {
+		process.env.FEATURE_REGISTRATION_ENABLED = "true";
+
+		const response = await request(app).get("/login");
+
+		expect(response.text).toContain('href="/register"');
 	});
 });
 
