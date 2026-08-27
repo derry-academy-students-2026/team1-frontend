@@ -32,7 +32,9 @@
 				</div>
 
 				<button type="submit" class="button button--submit">Sign in</button>
+				{% if features.registration %}
 				<p class="form-link"><a href="/register">Need an account? Register</a></p>
+				{% endif %}
 			</form>
 		</section>
 	</div>

@@ -103,7 +103,8 @@ jobs:
       - name: Terraform init
         run: terraform init -input=false -backend-config="key=team1-frontend-${{ env.ENVIRONMENT }}.terraform.tfstate"
       - name: Terraform plan
-        run: terraform plan -input=false -var-file="environments/${{ env.ENVIRONMENT }}.tfvars" -out=tfplan
+        # Deploy the image built by this run rather than the mutable :latest tag.
+        run: terraform plan -input=false -var-file="environments/${{ env.ENVIRONMENT }}.tfvars" -var="image_tag=${{ github.sha }}" -out=tfplan
       - name: Upload plan artifact
         uses: actions/upload-artifact@v4
         with:

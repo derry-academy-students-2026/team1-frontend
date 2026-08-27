@@ -10,23 +10,19 @@ resource "azurerm_key_vault" "frontendKeyVault" {
   purge_protection_enabled   = false
   soft_delete_retention_days = 7
 
+  # Set at creation because Azure will not allow the model to change later.
+  rbac_authorization_enabled = true
+
   tags = {
     environment = var.environment
     project     = var.project_name
   }
 }
 
-resource "azurerm_key_vault_access_policy" "app" {
-  key_vault_id = azurerm_key_vault.frontendKeyVault.id
-  tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = data.azurerm_client_config.current.object_id
-
-  secret_permissions = [
-    "Get",
-    "List",
-    "Set",
-    "Delete",
-    "Purge",
-    "Recover"
-  ]
+# Secret values are added manually in the portal, so Terraform never needs
+# data-plane access and no secret ever lands in state.
+resource "azurerm_role_assignment" "kv_secrets_user" {
+  scope                = azurerm_key_vault.frontendKeyVault.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = azurerm_user_assigned_identity.app.principal_id
 }
