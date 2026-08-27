@@ -4,6 +4,12 @@ variable "resource_group_name" {
   default     = "team1-frontend"
 }
 
+variable "project_name" {
+  description = "Project short name used for naming Azure resources."
+  type        = string
+  default     = "team1-frontend"
+}
+
 variable "location" {
   description = "Azure region where the resource group is created."
   type        = string
