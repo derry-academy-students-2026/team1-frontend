@@ -12,6 +12,8 @@ import jobRoleRouter from "./routes/jobRoleRouter.js";
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 if (!process.env.SESSION_SECRET && process.env.NODE_ENV === "production") {
 	throw new Error(
 		"SESSION_SECRET environment variable must be set in production",
