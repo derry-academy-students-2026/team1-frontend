@@ -236,21 +236,6 @@ describe("JobRoleController", () => {
 			expect(redirect).toHaveBeenCalledWith("/job-roles/1?applySuccess=1");
 		});
 
-		it("returns 404 for a non-numeric id", async () => {
-			const controller = new JobRoleController();
-			const send = vi.fn();
-			const status = vi.fn().mockReturnValue({ send });
-			const response = { status } as unknown as Response;
-
-			await controller.applyForRole(
-				{ params: { id: "abc" }, body: {} } as unknown as Request,
-				response,
-			);
-
-			expect(status).toHaveBeenCalledWith(404);
-			expect(jobRoleApiService.applyForJobRole).not.toHaveBeenCalled();
-		});
-
 		it("redirects to /logout when the backend rejects the session token", async () => {
 			vi.mocked(jobRoleApiService.applyForJobRole).mockRejectedValue({
 				response: { status: 401 },
@@ -405,21 +390,6 @@ describe("JobRoleController", () => {
 				linkedInUrl: "",
 				coverLetter: "",
 			});
-		});
-
-		it("returns 404 for a non-numeric id", async () => {
-			const controller = new JobRoleController();
-			const send = vi.fn();
-			const status = vi.fn().mockReturnValue({ send });
-			const response = { status } as unknown as Response;
-
-			await controller.getApplyForm(
-				{ params: { id: "abc" } } as unknown as Request,
-				response,
-			);
-
-			expect(status).toHaveBeenCalledWith(404);
-			expect(send).toHaveBeenCalledWith("Job role not found");
 		});
 
 		it("returns 404 when the job role is not found", async () => {

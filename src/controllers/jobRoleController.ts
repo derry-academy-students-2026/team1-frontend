@@ -77,11 +77,6 @@ export class JobRoleController {
 	async getJobRole(req: Request, res: Response) {
 		const id = Number(req.params.id);
 
-		if (!Number.isInteger(id) || id <= 0) {
-			res.status(404).send("Job role not found");
-			return;
-		}
-
 		try {
 			const jobRole = await this.jobApiRoleService.getJobRoleById(
 				id,
@@ -134,11 +129,6 @@ export class JobRoleController {
 	 */
 	async getApplyForm(req: Request, res: Response) {
 		const id = Number(req.params.id);
-
-		if (!Number.isInteger(id) || id <= 0) {
-			res.status(404).send("Job role not found");
-			return;
-		}
 
 		try {
 			const jobRole = await this.jobApiRoleService.getJobRoleById(
@@ -193,11 +183,6 @@ export class JobRoleController {
 	 */
 	async applyForRole(req: Request, res: Response) {
 		const id = Number(req.params.id);
-
-		if (!Number.isInteger(id) || id <= 0) {
-			res.status(404).send("Job role not found");
-			return;
-		}
 
 		const {
 			applicantName,
