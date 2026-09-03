@@ -25,11 +25,7 @@ describe("validateJobRoleId", () => {
 			const { res, status, send } = buildResponse();
 			const next = vi.fn() as NextFunction;
 
-			validateJobRoleId(
-				{ params: { id } } as unknown as Request,
-				res,
-				next,
-			);
+			validateJobRoleId({ params: { id } } as unknown as Request, res, next);
 
 			expect(next).not.toHaveBeenCalled();
 			expect(status).toHaveBeenCalledWith(404);
