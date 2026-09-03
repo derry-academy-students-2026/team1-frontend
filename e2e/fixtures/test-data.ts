@@ -8,6 +8,7 @@ export const testUser = {
 };
 
 export interface SeededJobRole {
+	id: number;
 	roleName: string;
 	location: string;
 	capability: string;
@@ -22,6 +23,7 @@ export interface SeededJobRole {
 
 export const seededJobRoles: SeededJobRole[] = [
 	{
+		id: 1,
 		roleName: "Software Engineer",
 		location: "Derry",
 		capability: "Engineering",
@@ -34,6 +36,7 @@ export const seededJobRoles: SeededJobRole[] = [
 		sharepointUrl: "https://example.sharepoint.com/software-engineer",
 	},
 	{
+		id: 2,
 		roleName: "Test Engineer",
 		location: "Gdansk",
 		capability: "Engineering",
@@ -46,6 +49,7 @@ export const seededJobRoles: SeededJobRole[] = [
 		sharepointUrl: "https://example.sharepoint.com/test-engineer",
 	},
 	{
+		id: 3,
 		roleName: "Project Manager",
 		location: "Belfast",
 		capability: "Engineering",
@@ -58,6 +62,7 @@ export const seededJobRoles: SeededJobRole[] = [
 		sharepointUrl: "https://example.sharepoint.com/project-manager",
 	},
 	{
+		id: 4,
 		roleName: "Data Engineer",
 		location: "Belfast",
 		capability: "Data",
@@ -70,6 +75,7 @@ export const seededJobRoles: SeededJobRole[] = [
 		sharepointUrl: "https://example.sharepoint.com/data-engineer",
 	},
 	{
+		id: 5,
 		roleName: "Frontend Developer",
 		location: "Derry",
 		capability: "Engineering",
@@ -82,6 +88,7 @@ export const seededJobRoles: SeededJobRole[] = [
 		sharepointUrl: "https://example.sharepoint.com/frontend-developer",
 	},
 	{
+		id: 6,
 		roleName: "Product Manager",
 		location: "Belfast",
 		capability: "Product",
@@ -95,6 +102,7 @@ export const seededJobRoles: SeededJobRole[] = [
 		sharepointUrl: "https://example.sharepoint.com/product-manager",
 	},
 	{
+		id: 7,
 		roleName: "DevOps Engineer",
 		location: "Gdansk",
 		capability: "Engineering",
@@ -108,6 +116,7 @@ export const seededJobRoles: SeededJobRole[] = [
 		sharepointUrl: "https://example.sharepoint.com/devops-engineer",
 	},
 	{
+		id: 8,
 		roleName: "UX Designer",
 		location: "Derry",
 		capability: "Product",
@@ -125,9 +134,13 @@ export const seededJobRoles: SeededJobRole[] = [
 export const openJobRoles = seededJobRoles.filter(
 	(role) => role.status === "open",
 );
+export const closedJobRoles = seededJobRoles.filter(
+	(role) => role.status === "closed",
+);
 
 export const primaryOpenJobRole = openJobRoles[0];
 export const secondaryOpenJobRole = openJobRoles[1];
+export const primaryClosedJobRole = closedJobRoles[0];
 
 export const urls = {
 	login: /\/login$/,

@@ -376,6 +376,10 @@ body > main {
 	color: var(--kainos-white);
 }
 
+.home-cta .section-kicker {
+	color: var(--kainos-white);
+}
+
 .button--light {
 	background: var(--kainos-white);
 	border-color: var(--kainos-white);
@@ -670,6 +674,10 @@ input:focus-visible {
 	margin-bottom: 0.35rem;
 }
 
+.apply-card {
+	max-width: 40rem;
+}
+
 .form-hint {
 	color: var(--kainos-grey);
 	display: block;
@@ -688,7 +696,30 @@ input:focus-visible {
 	width: 100%;
 }
 
-.form-group input:focus {
+.form-group textarea {
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	box-sizing: border-box;
+	font-family: inherit;
+	font-size: 1rem;
+	padding: 0.7rem 0.9rem;
+	resize: vertical;
+	width: 100%;
+}
+
+.form-group input[type="file"] {
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	box-sizing: border-box;
+	font-family: inherit;
+	font-size: 0.95rem;
+	min-height: 44px;
+	padding: 0.55rem 0.7rem;
+	width: 100%;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
 	border-color: var(--kainos-bright-blue);
 	box-shadow: 0 0 0 3px rgb(0 159 218 / 22%);
 }
@@ -713,6 +744,25 @@ input:focus-visible {
 	color: var(--kainos-blue);
 	font-weight: 700;
 	text-decoration: underline;
+}
+
+.apply-form {
+	margin-top: 1.5rem;
+}
+
+.job-role-detail__apply {
+	margin-top: 1.5rem;
+}
+
+.form-success {
+	background: #e7f5ec;
+	border: 1px solid var(--kainos-dark-green);
+	border-left-width: 4px;
+	border-radius: var(--radius-sm);
+	color: var(--kainos-dark-green);
+	font-weight: 700;
+	margin: 1.5rem 0 0;
+	padding: 0.85rem 1rem;
 }
 
 .site-footer {

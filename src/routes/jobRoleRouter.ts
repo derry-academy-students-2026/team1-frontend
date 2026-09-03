@@ -3,6 +3,8 @@ import {
 	getHome,
 	JobRoleController,
 } from "../controllers/jobRoleController.js";
+import { validateApplication } from "../middleware/applicationValidationMiddleware.js";
+import { cvUpload } from "../middleware/cvUploadMiddleware.js";
 import { requireAuth } from "../middleware/requireAuth.js";
 
 const router = Router();
@@ -23,6 +25,20 @@ router.get("/job-roles", requireAuth, (req, res) =>
 // Route for retrieving one job role and rendering its information page.
 router.get("/job-roles/:id", requireAuth, (req, res) =>
 	controller.getJobRole(req, res),
+);
+
+// Route for displaying the apply form for a job role.
+router.get("/job-roles/:id/apply", requireAuth, (req, res) =>
+	controller.getApplyForm(req, res),
+);
+
+// Route for submitting an application for a job role.
+router.post(
+	"/job-roles/:id/apply",
+	requireAuth,
+	cvUpload.single("cv"),
+	validateApplication,
+	(req, res) => controller.applyForRole(req, res),
 );
 
 export default router;

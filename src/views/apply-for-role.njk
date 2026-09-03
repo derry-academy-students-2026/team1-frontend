@@ -1,0 +1,110 @@
+{% extends "base.njk" %}
+
+{% block title %}Apply for {{ jobRole.roleName }} | Kainos careers{% endblock %}
+
+{% block bodyClass %}page-job-roles{% endblock %}
+
+{% block eyebrow %}Job role{% endblock %}
+
+{% block hero %}
+	<h1>Apply for {{ jobRole.roleName }}</h1>
+	<p class="hero__subtitle">{{ jobRole.location }} &middot; {{ jobRole.capability.name }}</p>
+{% endblock %}
+
+{% block content %}
+	<div class="page-content">
+		<nav class="breadcrumb" aria-label="Breadcrumb">
+			<ol class="breadcrumb__list">
+				<li><a href="/job-roles">Job roles</a></li>
+				<li><a href="/job-roles/{{ jobRole.id }}">{{ jobRole.roleName }}</a></li>
+				<li aria-current="page">Apply</li>
+			</ol>
+		</nav>
+
+		<section class="card login-card apply-card" aria-labelledby="apply-heading">
+			<h2 id="apply-heading">Your details</h2>
+			<p class="form-intro">Tell us a bit about yourself to apply for this role.</p>
+
+			{% if applyError %}
+				<p class="form-error" id="form-error" role="alert">{{ applyError }}</p>
+			{% else %}
+				<p class="form-error" id="form-error" role="alert" hidden></p>
+			{% endif %}
+
+			<form method="post" action="/job-roles/{{ jobRole.id }}/apply" enctype="multipart/form-data" novalidate>
+				<div class="form-group">
+					<label for="applicantName">Full name *</label>
+					<input type="text" id="applicantName" name="applicantName" autocomplete="name" value="{{ applicantName | default('') }}" required />
+				</div>
+
+				<div class="form-group">
+					<label for="applicantEmail">Email address *</label>
+					<input type="email" id="applicantEmail" name="applicantEmail" autocomplete="email" value="{{ applicantEmail | default('') }}" required />
+				</div>
+
+				<div class="form-group">
+					<label for="phoneNumber">Phone number *</label>
+					<input type="tel" id="phoneNumber" name="phoneNumber" autocomplete="tel" value="{{ phoneNumber | default('') }}" required />
+				</div>
+
+				<div class="form-group">
+					<label for="address">Home address *</label>
+					<textarea id="address" name="address" autocomplete="street-address" rows="2" required>{{ address | default('') }}</textarea>
+				</div>
+
+				<div class="form-group">
+					<label for="linkedInUrl">LinkedIn or portfolio URL</label>
+					<span class="form-hint" id="linkedInUrl-hint">Optional</span>
+					<input type="url" id="linkedInUrl" name="linkedInUrl" autocomplete="url" aria-describedby="linkedInUrl-hint" placeholder="https://" value="{{ linkedInUrl | default('') }}" />
+				</div>
+
+				<div class="form-group">
+					<label for="coverLetter">Cover letter or additional information *</label>
+					<textarea id="coverLetter" name="coverLetter" rows="5" required>{{ coverLetter | default('') }}</textarea>
+				</div>
+
+				<div class="form-group">
+					<label for="cv">CV or resume</label>
+					<span class="form-hint" id="cv-hint">Optional &mdash; PDF or Word document, up to 5MB.</span>
+					<input type="file" id="cv" name="cv" accept=".pdf,.doc,.docx" aria-describedby="cv-hint" />
+				</div>
+
+				<button type="submit" class="button button--submit" data-testid="apply-submit">Submit application</button>
+				<p class="form-link"><a href="/job-roles/{{ jobRole.id }}">Back to {{ jobRole.roleName }}</a></p>
+			</form>
+		</section>
+	</div>
+
+	<script>
+		const applyForm = document.querySelector('form[action^="/job-roles/"][action$="/apply"]');
+		const applyError = document.querySelector("#form-error");
+		const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+		applyForm?.addEventListener("submit", (event) => {
+			const name = document.querySelector("#applicantName").value.trim();
+			const email = document.querySelector("#applicantEmail").value.trim();
+			const phoneNumber = document.querySelector("#phoneNumber").value.trim();
+			const address = document.querySelector("#address").value.trim();
+			const coverLetter = document.querySelector("#coverLetter").value.trim();
+			let message = "";
+
+			if (!name) {
+				message = "Enter your full name";
+			} else if (!email || !emailPattern.test(email)) {
+				message = "Enter a valid email address";
+			} else if (!phoneNumber) {
+				message = "Enter your phone number";
+			} else if (!address) {
+				message = "Enter your home address";
+			} else if (!coverLetter) {
+				message = "Enter a cover letter or additional information";
+			}
+
+			if (message) {
+				event.preventDefault();
+				applyError.textContent = message;
+				applyError.hidden = false;
+			}
+		});
+	</script>
+{% endblock %}

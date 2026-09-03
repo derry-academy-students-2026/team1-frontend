@@ -171,6 +171,7 @@ describe("JobRoleController", () => {
 		);
 		expect(render).toHaveBeenCalledWith("job-role-information.njk", {
 			jobRole: { ...jobRole, closingDate: "30/8/2026" },
+			applySuccess: false,
 		});
 	});
 
@@ -191,5 +192,270 @@ describe("JobRoleController", () => {
 
 		expect(status).toHaveBeenCalledWith(404);
 		expect(send).toHaveBeenCalledWith("Job role not found");
+	});
+
+	describe("applyForRole", () => {
+		it("submits the application and redirects with a success flash", async () => {
+			vi.mocked(jobRoleApiService.applyForJobRole).mockResolvedValue({
+				id: 1,
+				roleId: 1,
+				applicantName: "Jane Doe",
+				applicantEmail: "jane@example.com",
+				status: "in progress",
+				createdAt: new Date("2026-09-03"),
+			});
+
+			const controller = new JobRoleController();
+			const redirect = vi.fn();
+			const response = { redirect } as unknown as Response;
+
+			await controller.applyForRole(
+				{
+					params: { id: "1" },
+					body: {
+						applicantName: "Jane Doe",
+						applicantEmail: "jane@example.com",
+					},
+					session: { jwtToken: "test-token" },
+				} as unknown as Request,
+				response,
+			);
+
+			expect(jobRoleApiService.applyForJobRole).toHaveBeenCalledWith(
+				1,
+				{
+					applicantName: "Jane Doe",
+					applicantEmail: "jane@example.com",
+					phoneNumber: undefined,
+					address: undefined,
+					linkedInUrl: undefined,
+					coverLetter: undefined,
+				},
+				"test-token",
+			);
+			expect(redirect).toHaveBeenCalledWith("/job-roles/1?applySuccess=1");
+		});
+
+		it("returns 404 for a non-numeric id", async () => {
+			const controller = new JobRoleController();
+			const send = vi.fn();
+			const status = vi.fn().mockReturnValue({ send });
+			const response = { status } as unknown as Response;
+
+			await controller.applyForRole(
+				{ params: { id: "abc" }, body: {} } as unknown as Request,
+				response,
+			);
+
+			expect(status).toHaveBeenCalledWith(404);
+			expect(jobRoleApiService.applyForJobRole).not.toHaveBeenCalled();
+		});
+
+		it("redirects to /logout when the backend rejects the session token", async () => {
+			vi.mocked(jobRoleApiService.applyForJobRole).mockRejectedValue({
+				response: { status: 401 },
+			});
+
+			const controller = new JobRoleController();
+			const redirect = vi.fn();
+			const response = { redirect } as unknown as Response;
+
+			await controller.applyForRole(
+				{
+					params: { id: "1" },
+					body: {
+						applicantName: "Jane Doe",
+						applicantEmail: "jane@example.com",
+					},
+					session: {},
+				} as unknown as Request,
+				response,
+			);
+
+			expect(redirect).toHaveBeenCalledWith("/logout");
+		});
+
+		it("redirects back with an error flash on a duplicate application (409)", async () => {
+			vi.mocked(jobRoleApiService.applyForJobRole).mockRejectedValue({
+				response: { status: 409 },
+			});
+
+			const controller = new JobRoleController();
+			const redirect = vi.fn();
+			const response = { redirect } as unknown as Response;
+
+			await controller.applyForRole(
+				{
+					params: { id: "1" },
+					body: {
+						applicantName: "Jane Doe",
+						applicantEmail: "jane@example.com",
+					},
+					session: {},
+				} as unknown as Request,
+				response,
+			);
+
+			expect(redirect).toHaveBeenCalledWith(
+				expect.stringContaining(
+					"/job-roles/1/apply?applyError=You+have+already+applied+for+this+role",
+				),
+			);
+		});
+
+		it("redirects back with a generic error flash on unexpected failures", async () => {
+			vi.mocked(jobRoleApiService.applyForJobRole).mockRejectedValue(
+				new Error("Network error"),
+			);
+
+			const controller = new JobRoleController();
+			const redirect = vi.fn();
+			const response = { redirect } as unknown as Response;
+
+			await controller.applyForRole(
+				{
+					params: { id: "1" },
+					body: {
+						applicantName: "Jane Doe",
+						applicantEmail: "jane@example.com",
+					},
+					session: {},
+				} as unknown as Request,
+				response,
+			);
+
+			expect(redirect).toHaveBeenCalledWith(
+				expect.stringContaining("/job-roles/1/apply?applyError="),
+			);
+		});
+	});
+
+	describe("getApplyForm", () => {
+		const jobRole = {
+			id: 1,
+			roleName: "Software Engineer",
+			description: "Build software products.",
+			responsibilities: "Design, build and test software.",
+			sharepointUrl: "https://sharepoint.example.com/software-engineer",
+			location: "Belfast",
+			capability: { id: 1, name: "Engineering" },
+			band: { id: 2, name: "Band 2" },
+			closingDate: new Date("2026-08-30"),
+			status: { id: 1, name: "open" },
+			numberOfOpenPositions: 2,
+		};
+
+		it("renders apply-for-role.njk with the job role and empty flash state", async () => {
+			vi.mocked(jobRoleApiService.getJobRoleById).mockResolvedValue(jobRole);
+
+			const controller = new JobRoleController();
+			const render = vi.fn();
+			const response = { render } as unknown as Response;
+
+			await controller.getApplyForm(
+				{
+					params: { id: "1" },
+					session: { jwtToken: "test-token" },
+				} as unknown as Request,
+				response,
+			);
+
+			expect(jobRoleApiService.getJobRoleById).toHaveBeenCalledWith(
+				1,
+				"test-token",
+			);
+			expect(render).toHaveBeenCalledWith("apply-for-role.njk", {
+				jobRole,
+				applyError: undefined,
+				applicantName: "",
+				applicantEmail: "",
+				phoneNumber: "",
+				address: "",
+				linkedInUrl: "",
+				coverLetter: "",
+			});
+		});
+
+		it("passes through the applyError flash and preserved input", async () => {
+			vi.mocked(jobRoleApiService.getJobRoleById).mockResolvedValue(jobRole);
+
+			const controller = new JobRoleController();
+			const render = vi.fn();
+			const response = { render } as unknown as Response;
+
+			await controller.getApplyForm(
+				{
+					params: { id: "1" },
+					query: {
+						applyError: "Enter a valid email address",
+						applicantName: "Jane Doe",
+						applicantEmail: "not-an-email",
+					},
+				} as unknown as Request,
+				response,
+			);
+
+			expect(render).toHaveBeenCalledWith("apply-for-role.njk", {
+				jobRole,
+				applyError: "Enter a valid email address",
+				applicantName: "Jane Doe",
+				applicantEmail: "not-an-email",
+				phoneNumber: "",
+				address: "",
+				linkedInUrl: "",
+				coverLetter: "",
+			});
+		});
+
+		it("returns 404 for a non-numeric id", async () => {
+			const controller = new JobRoleController();
+			const send = vi.fn();
+			const status = vi.fn().mockReturnValue({ send });
+			const response = { status } as unknown as Response;
+
+			await controller.getApplyForm(
+				{ params: { id: "abc" } } as unknown as Request,
+				response,
+			);
+
+			expect(status).toHaveBeenCalledWith(404);
+			expect(send).toHaveBeenCalledWith("Job role not found");
+		});
+
+		it("returns 404 when the job role is not found", async () => {
+			vi.mocked(jobRoleApiService.getJobRoleById).mockRejectedValue({
+				response: { status: 404 },
+			});
+
+			const controller = new JobRoleController();
+			const send = vi.fn();
+			const status = vi.fn().mockReturnValue({ send });
+			const response = { status } as unknown as Response;
+
+			await controller.getApplyForm(
+				{ params: { id: "1" } } as unknown as Request,
+				response,
+			);
+
+			expect(status).toHaveBeenCalledWith(404);
+			expect(send).toHaveBeenCalledWith("Job role not found");
+		});
+
+		it("redirects to /logout when the backend rejects the session token", async () => {
+			vi.mocked(jobRoleApiService.getJobRoleById).mockRejectedValue({
+				response: { status: 401 },
+			});
+
+			const controller = new JobRoleController();
+			const redirect = vi.fn();
+			const response = { redirect } as unknown as Response;
+
+			await controller.getApplyForm(
+				{ params: { id: "1" }, session: {} } as unknown as Request,
+				response,
+			);
+
+			expect(redirect).toHaveBeenCalledWith("/logout");
+		});
 	});
 });

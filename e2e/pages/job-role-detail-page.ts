@@ -12,6 +12,8 @@ export class JobRoleDetailPage extends BasePage {
 	readonly backLink: Locator;
 	readonly breadcrumbBackLink: Locator;
 	readonly jobSpecificationLink: Locator;
+	readonly applyButton: Locator;
+	readonly applySuccessMessage: Locator;
 
 	constructor(page: Page) {
 		super(page);
@@ -30,6 +32,8 @@ export class JobRoleDetailPage extends BasePage {
 		this.jobSpecificationLink = page.getByRole("link", {
 			name: "View job specification",
 		});
+		this.applyButton = page.getByTestId("apply-button");
+		this.applySuccessMessage = page.getByRole("status");
 	}
 
 	async goto(id: number) {
@@ -46,5 +50,9 @@ export class JobRoleDetailPage extends BasePage {
 
 	async clickViewJobSpecification() {
 		await this.jobSpecificationLink.click();
+	}
+
+	async clickApply() {
+		await this.applyButton.click();
 	}
 }

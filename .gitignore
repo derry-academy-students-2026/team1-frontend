@@ -57,6 +57,7 @@ code_reviews/
 *.terraform.lock.hcl
 *.tfstate
 *.tfstate.*
+tfplan
 crash.log
 crash.*.log
 override.tf
