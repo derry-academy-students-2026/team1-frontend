@@ -237,7 +237,7 @@ export class JobRoleController {
 				status === 409
 					? "You have already applied for this role"
 					: status === 400
-						? "Enter a valid name and email address"
+						? "Check the details you entered and try again"
 						: "Unable to submit your application. Please try again.";
 
 			Logger.error(`Failed to apply for job role ${id}: ${message}`);

@@ -658,6 +658,16 @@ input:focus-visible {
 	margin: 0 0 1.75rem;
 }
 
+.apply-card .form-intro {
+	margin-bottom: 0.5rem;
+}
+
+.form-required-note {
+	color: var(--kainos-grey);
+	font-size: 0.9rem;
+	margin: 0 0 1.5rem;
+}
+
 .login-card .button--submit {
 	font-size: 1.05rem;
 	width: 100%;
