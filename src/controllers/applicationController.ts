@@ -9,12 +9,6 @@ export class ApplicationController {
 		private readonly jobRoleService = jobRoleApiService,
 	) {}
 
-	/** Reads a string query param used to repopulate the apply form after a redirect. */
-	private flashField(req: Request, field: string): string {
-		const value = req.query?.[field];
-		return typeof value === "string" ? value : "";
-	}
-
 	async getApplyForm(req: Request, res: Response) {
 		const id = Number(req.params.id);
 
@@ -24,19 +18,47 @@ export class ApplicationController {
 				req.session?.jwtToken,
 			);
 
+			const applicationErrors = req.session.applicationErrors;
+			const applicationValues = req.session.applicationValues;
+			delete req.session.applicationErrors;
+			delete req.session.applicationValues;
+
 			res.render("apply-for-role.njk", {
 				jobRole,
-				applyError:
-					typeof req.query?.applyError === "string"
-						? req.query.applyError
-						: undefined,
-				applicantName: this.flashField(req, "applicantName"),
-				applicantEmail: this.flashField(req, "applicantEmail"),
-				phoneNumber: this.flashField(req, "phoneNumber"),
-				address: this.flashField(req, "address"),
-				linkedInUrl: this.flashField(req, "linkedInUrl"),
-				coverLetter: this.flashField(req, "coverLetter"),
+				applicationErrors,
+				...(applicationValues ?? {}),
 			});
+		} catch (error) {
+			const status = (error as { response?: { status?: number } }).response
+				?.status;
+			const message = error instanceof Error ? error.message : "Unknown error";
+
+			if (status === 401) {
+				Logger.warn("Backend rejected the session token, re-authenticating");
+				res.redirect("/logout");
+				return;
+			}
+
+			if (status === 404) {
+				Logger.error(`Job role ${id} not found: ${message}`);
+				res.status(404).send("Job role not found");
+				return;
+			}
+
+			Logger.error(`Failed to load job role ${id}: ${message}`);
+			res.status(500).send("Unable to load job role");
+		}
+	}
+
+	async getApplicationConfirmation(req: Request, res: Response) {
+		const id = Number(req.params.id);
+
+		try {
+			const jobRole = await this.jobRoleService.getJobRoleById(
+				id,
+				req.session?.jwtToken,
+			);
+			res.render("application-received.njk", { jobRole });
 		} catch (error) {
 			const status = (error as { response?: { status?: number } }).response
 				?.status;
@@ -70,6 +92,8 @@ export class ApplicationController {
 			address,
 			linkedInUrl,
 			coverLetter,
+			rightToWork,
+			privacyConsent,
 		} = req.body;
 
 		try {
@@ -82,13 +106,18 @@ export class ApplicationController {
 					address,
 					linkedInUrl,
 					coverLetter,
+					rightToWork,
+					privacyConsent,
 				},
 				req.session?.jwtToken,
 			);
-			res.redirect(`/job-roles/${id}?applySuccess=1`);
+			res.redirect(`/job-roles/${id}/apply/confirmation`);
 		} catch (error) {
 			const status = (error as { response?: { status?: number } }).response
 				?.status;
+			const backendMessage = (
+				error as { response?: { data?: { message?: string } } }
+			).response?.data?.message;
 			const message = error instanceof Error ? error.message : "Unknown error";
 
 			if (status === 401) {
@@ -101,13 +130,13 @@ export class ApplicationController {
 				status === 409
 					? "You have already applied for this role"
 					: status === 400
-						? "Check the details you entered and try again"
+						? (backendMessage ?? "Check the details you entered and try again")
 						: "Unable to submit your application. Please try again.";
 
 			Logger.error(`Failed to apply for job role ${id}: ${message}`);
 
-			const params = new URLSearchParams({
-				applyError: errorMessage,
+			req.session.applicationErrors = { _form: errorMessage };
+			req.session.applicationValues = {
 				applicantName: typeof applicantName === "string" ? applicantName : "",
 				applicantEmail:
 					typeof applicantEmail === "string" ? applicantEmail : "",
@@ -115,8 +144,11 @@ export class ApplicationController {
 				address: typeof address === "string" ? address : "",
 				linkedInUrl: typeof linkedInUrl === "string" ? linkedInUrl : "",
 				coverLetter: typeof coverLetter === "string" ? coverLetter : "",
-			});
-			res.redirect(`/job-roles/${id}/apply?${params.toString()}`);
+				rightToWork: typeof rightToWork === "string" ? rightToWork : "",
+				privacyConsent:
+					typeof privacyConsent === "string" ? privacyConsent : "",
+			};
+			res.redirect(`/job-roles/${id}/apply`);
 		}
 	}
 }

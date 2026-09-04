@@ -33,6 +33,11 @@ describe("ApplicationController", () => {
 				roleId: 1,
 				applicantName: "Jane Doe",
 				applicantEmail: "jane@example.com",
+				phoneNumber: "07700900000",
+				address: "1 Example Street",
+				coverLetter: "I would like to apply.",
+				rightToWork: "yes",
+				privacyConsent: "on",
 				status: "in progress",
 				createdAt: new Date("2026-09-03"),
 			});
@@ -47,6 +52,11 @@ describe("ApplicationController", () => {
 					body: {
 						applicantName: "Jane Doe",
 						applicantEmail: "jane@example.com",
+						phoneNumber: "07700900000",
+						address: "1 Example Street",
+						coverLetter: "I would like to apply.",
+						rightToWork: "yes",
+						privacyConsent: "on",
 					},
 					session: { jwtToken: "test-token" },
 				} as unknown as Request,
@@ -58,14 +68,16 @@ describe("ApplicationController", () => {
 				{
 					applicantName: "Jane Doe",
 					applicantEmail: "jane@example.com",
-					phoneNumber: undefined,
-					address: undefined,
+					phoneNumber: "07700900000",
+					address: "1 Example Street",
 					linkedInUrl: undefined,
-					coverLetter: undefined,
+					coverLetter: "I would like to apply.",
+					rightToWork: "yes",
+					privacyConsent: "on",
 				},
 				"test-token",
 			);
-			expect(redirect).toHaveBeenCalledWith("/job-roles/1?applySuccess=1");
+			expect(redirect).toHaveBeenCalledWith("/job-roles/1/apply/confirmation");
 		});
 
 		it("redirects to /logout when the backend rejects the session token", async () => {
@@ -113,11 +125,38 @@ describe("ApplicationController", () => {
 				response,
 			);
 
-			expect(redirect).toHaveBeenCalledWith(
-				expect.stringContaining(
-					"/job-roles/1/apply?applyError=You+have+already+applied+for+this+role",
-				),
-			);
+			expect(redirect).toHaveBeenCalledWith("/job-roles/1/apply");
+		});
+
+		it("preserves the backend message for invalid application data (400)", async () => {
+			vi.mocked(applicationApiService.applyForJobRole).mockRejectedValue({
+				response: {
+					status: 400,
+					data: { message: "Enter a valid LinkedIn profile URL" },
+				},
+			});
+
+			const controller = new ApplicationController();
+			const redirect = vi.fn();
+			const response = { redirect } as unknown as Response;
+			const req = {
+				params: { id: "1" },
+				body: {},
+				session: {},
+			} as unknown as Request;
+
+			await controller.applyForRole(req, response);
+
+			expect(
+				(
+					req.session as Request["session"] & {
+						applicationErrors?: Record<string, string>;
+					}
+				).applicationErrors,
+			).toEqual({
+				_form: "Enter a valid LinkedIn profile URL",
+			});
+			expect(redirect).toHaveBeenCalledWith("/job-roles/1/apply");
 		});
 
 		it("redirects back with a generic error flash on unexpected failures", async () => {
@@ -141,9 +180,7 @@ describe("ApplicationController", () => {
 				response,
 			);
 
-			expect(redirect).toHaveBeenCalledWith(
-				expect.stringContaining("/job-roles/1/apply?applyError="),
-			);
+			expect(redirect).toHaveBeenCalledWith("/job-roles/1/apply");
 		});
 	});
 
@@ -169,13 +206,7 @@ describe("ApplicationController", () => {
 			);
 			expect(render).toHaveBeenCalledWith("apply-for-role.njk", {
 				jobRole,
-				applyError: undefined,
-				applicantName: "",
-				applicantEmail: "",
-				phoneNumber: "",
-				address: "",
-				linkedInUrl: "",
-				coverLetter: "",
+				applicationErrors: undefined,
 			});
 		});
 
@@ -186,28 +217,36 @@ describe("ApplicationController", () => {
 			const render = vi.fn();
 			const response = { render } as unknown as Response;
 
-			await controller.getApplyForm(
-				{
-					params: { id: "1" },
-					query: {
-						applyError: "Enter a valid email address",
+			const req = {
+				params: { id: "1" },
+				session: {
+					applicationErrors: {
+						applicantEmail: "Enter a valid email address",
+					},
+					applicationValues: {
 						applicantName: "Jane Doe",
 						applicantEmail: "not-an-email",
 					},
-				} as unknown as Request,
-				response,
-			);
+				},
+			} as unknown as Request;
+
+			await controller.getApplyForm(req, response);
 
 			expect(render).toHaveBeenCalledWith("apply-for-role.njk", {
 				jobRole,
-				applyError: "Enter a valid email address",
+				applicationErrors: {
+					applicantEmail: "Enter a valid email address",
+				},
 				applicantName: "Jane Doe",
 				applicantEmail: "not-an-email",
-				phoneNumber: "",
-				address: "",
-				linkedInUrl: "",
-				coverLetter: "",
 			});
+			expect(
+				(
+					req.session as Request["session"] & {
+						applicationErrors?: Record<string, string>;
+					}
+				).applicationErrors,
+			).toBeUndefined();
 		});
 
 		it("returns 404 when the job role is not found", async () => {

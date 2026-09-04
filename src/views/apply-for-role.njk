@@ -26,31 +26,33 @@
 			<p class="form-intro">Tell us a bit about yourself to apply for this role.</p>
 			<p class="form-required-note">Fields marked with * are required.</p>
 
-			{% if applyError %}
-				<p class="form-error" id="form-error" role="alert">{{ applyError }}</p>
-			{% else %}
-				<p class="form-error" id="form-error" role="alert" hidden></p>
+			{% if applicationErrors._form %}
+				<p class="form-error" id="form-error" role="alert" tabindex="-1">{{ applicationErrors._form }}</p>
 			{% endif %}
 
-			<form method="post" action="/job-roles/{{ jobRole.id }}/apply" enctype="multipart/form-data" novalidate>
+			<form class="apply-form" method="post" action="/job-roles/{{ jobRole.id }}/apply" novalidate>
 				<div class="form-group">
 					<label for="applicantName">Full name *</label>
-					<input type="text" id="applicantName" name="applicantName" autocomplete="name" value="{{ applicantName | default('') }}" required />
+					<input type="text" id="applicantName" name="applicantName" autocomplete="name" value="{{ applicantName | default('') }}" aria-invalid="{{ 'true' if applicationErrors.applicantName else 'false' }}" aria-describedby="applicantName-error" required />
+					{% if applicationErrors.applicantName %}<p class="field-error" id="applicantName-error">{{ applicationErrors.applicantName }}</p>{% endif %}
 				</div>
 
 				<div class="form-group">
 					<label for="applicantEmail">Email address *</label>
-					<input type="email" id="applicantEmail" name="applicantEmail" autocomplete="email" value="{{ applicantEmail | default('') }}" required />
+					<input type="email" id="applicantEmail" name="applicantEmail" autocomplete="email" value="{{ applicantEmail | default('') }}" aria-invalid="{{ 'true' if applicationErrors.applicantEmail else 'false' }}" aria-describedby="applicantEmail-error" required />
+					{% if applicationErrors.applicantEmail %}<p class="field-error" id="applicantEmail-error">{{ applicationErrors.applicantEmail }}</p>{% endif %}
 				</div>
 
 				<div class="form-group">
 					<label for="phoneNumber">Phone number *</label>
-					<input type="tel" id="phoneNumber" name="phoneNumber" autocomplete="tel" value="{{ phoneNumber | default('') }}" required />
+					<input type="tel" id="phoneNumber" name="phoneNumber" autocomplete="tel" value="{{ phoneNumber | default('') }}" aria-invalid="{{ 'true' if applicationErrors.phoneNumber else 'false' }}" aria-describedby="phoneNumber-error" required />
+					{% if applicationErrors.phoneNumber %}<p class="field-error" id="phoneNumber-error">{{ applicationErrors.phoneNumber }}</p>{% endif %}
 				</div>
 
 				<div class="form-group">
 					<label for="address">Home address *</label>
-					<textarea id="address" name="address" autocomplete="street-address" rows="2" required>{{ address | default('') }}</textarea>
+					<textarea id="address" name="address" autocomplete="street-address" rows="2" aria-invalid="{{ 'true' if applicationErrors.address else 'false' }}" aria-describedby="address-error" required>{{ address | default('') }}</textarea>
+					{% if applicationErrors.address %}<p class="field-error" id="address-error">{{ applicationErrors.address }}</p>{% endif %}
 				</div>
 
 				<div class="form-group">
@@ -61,13 +63,24 @@
 
 				<div class="form-group">
 					<label for="coverLetter">Cover letter or additional information *</label>
-					<textarea id="coverLetter" name="coverLetter" rows="5" required>{{ coverLetter | default('') }}</textarea>
+					<textarea id="coverLetter" name="coverLetter" rows="5" aria-invalid="{{ 'true' if applicationErrors.coverLetter else 'false' }}" aria-describedby="coverLetter-error" required>{{ coverLetter | default('') }}</textarea>
+					{% if applicationErrors.coverLetter %}<p class="field-error" id="coverLetter-error">{{ applicationErrors.coverLetter }}</p>{% endif %}
 				</div>
 
 				<div class="form-group">
-					<label for="cv">CV or resume</label>
-					<span class="form-hint" id="cv-hint">Optional &mdash; PDF or Word document, up to 5MB.</span>
-					<input type="file" id="cv" name="cv" accept=".pdf,.doc,.docx" aria-describedby="cv-hint" />
+					<fieldset class="choice-group" aria-describedby="rightToWork-error">
+						<legend>Do you have the right to work in the UK/Ireland? *</legend>
+						<div class="choice-options">
+							<label class="choice-option" for="rightToWorkYes"><input type="radio" id="rightToWorkYes" name="rightToWork" value="yes" {% if rightToWork == "yes" %}checked{% endif %} required /> <span>Yes</span></label>
+							<label class="choice-option" for="rightToWorkNo"><input type="radio" id="rightToWorkNo" name="rightToWork" value="no" {% if rightToWork == "no" %}checked{% endif %} /> <span>No</span></label>
+						</div>
+						{% if applicationErrors.rightToWork %}<p class="field-error" id="rightToWork-error">{{ applicationErrors.rightToWork }}</p>{% endif %}
+					</fieldset>
+				</div>
+
+				<div class="form-group form-checkbox">
+					<label for="privacyConsent"><input type="checkbox" id="privacyConsent" name="privacyConsent" value="on" {% if privacyConsent == "on" %}checked{% endif %} aria-invalid="{{ 'true' if applicationErrors.privacyConsent else 'false' }}" aria-describedby="privacyConsent-error" required /><span>I consent to Kainos storing and processing my personal data in line with the <a href="https://www.kainos.com/information/privacy-notice">Privacy Policy</a></span></label>
+					{% if applicationErrors.privacyConsent %}<p class="field-error" id="privacyConsent-error">{{ applicationErrors.privacyConsent }}</p>{% endif %}
 				</div>
 
 				<button type="submit" class="button button--submit" data-testid="apply-submit">Submit application</button>
@@ -78,33 +91,59 @@
 
 	<script>
 		const applyForm = document.querySelector('form[action^="/job-roles/"][action$="/apply"]');
-		const applyError = document.querySelector("#form-error");
 		const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		const phonePattern = /^\+?[0-9\s().-]{7,30}$/;
+
+		const setFieldError = (field, message) => {
+			const errorId = `${field.id}-error`;
+			let error = document.querySelector(`#${errorId}`);
+			field.setAttribute("aria-invalid", message ? "true" : "false");
+			if (message && !error) {
+				error = document.createElement("p");
+				error.className = "field-error";
+				error.id = errorId;
+				field.closest(".form-group")?.append(error);
+			}
+			if (error) {
+				error.textContent = message;
+				error.hidden = !message;
+			}
+		};
+
+		const validateEmail = () => {
+			const field = document.querySelector("#applicantEmail");
+			const value = field.value.trim();
+			const message = !value || !emailPattern.test(value) ? "Enter a valid email address" : "";
+			setFieldError(field, message);
+			return !message;
+		};
+
+		const validatePhone = () => {
+			const field = document.querySelector("#phoneNumber");
+			const value = field.value.trim();
+			const message = !value ? "Enter your phone number" : !phonePattern.test(value) ? "Enter a valid phone number" : "";
+			setFieldError(field, message);
+			return !message;
+		};
+
+		document.querySelector("#applicantEmail")?.addEventListener("blur", validateEmail);
+		document.querySelector("#phoneNumber")?.addEventListener("blur", validatePhone);
+
+		document.querySelector("#form-error")?.focus();
 
 		applyForm?.addEventListener("submit", (event) => {
 			const name = document.querySelector("#applicantName").value.trim();
-			const email = document.querySelector("#applicantEmail").value.trim();
-			const phoneNumber = document.querySelector("#phoneNumber").value.trim();
 			const address = document.querySelector("#address").value.trim();
 			const coverLetter = document.querySelector("#coverLetter").value.trim();
-			let message = "";
+			const nameValid = Boolean(name);
+			const addressValid = Boolean(address);
+			const coverLetterValid = Boolean(coverLetter);
+			setFieldError(document.querySelector("#applicantName"), nameValid ? "" : "Enter your full name");
+			setFieldError(document.querySelector("#address"), addressValid ? "" : "Enter your home address");
+			setFieldError(document.querySelector("#coverLetter"), coverLetterValid ? "" : "Enter a cover letter or additional information");
 
-			if (!name) {
-				message = "Enter your full name";
-			} else if (!email || !emailPattern.test(email)) {
-				message = "Enter a valid email address";
-			} else if (!phoneNumber) {
-				message = "Enter your phone number";
-			} else if (!address) {
-				message = "Enter your home address";
-			} else if (!coverLetter) {
-				message = "Enter a cover letter or additional information";
-			}
-
-			if (message) {
+			if (!nameValid || !validateEmail() || !validatePhone() || !addressValid || !coverLetterValid || !document.querySelector("input[name='rightToWork']:checked") || !document.querySelector("#privacyConsent").checked) {
 				event.preventDefault();
-				applyError.textContent = message;
-				applyError.hidden = false;
 			}
 		});
 	</script>

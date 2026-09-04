@@ -8,20 +8,21 @@ const validBody = {
 	phoneNumber: "07700900000",
 	address: "1 Example Street, Belfast",
 	coverLetter: "I would love to join the team.",
+	rightToWork: "yes",
+	privacyConsent: "on",
 };
-const cvFile = {
-	originalname: "cv.pdf",
-	mimetype: "application/pdf",
-	buffer: Buffer.from([0x25, 0x50, 0x44, 0x46]),
-} as Express.Multer.File;
+
+type ApplicationSession = Request["session"] & {
+	applicationErrors?: Record<string, string>;
+	applicationValues?: Record<string, string>;
+};
+
+const requestWith = (body: Record<string, string>) =>
+	({ params: { id: "1" }, body, session: {} }) as unknown as Request;
 
 describe("validateApplication", () => {
 	it("calls next() with normalized body when valid", () => {
-		const req = {
-			params: { id: "1" },
-			body: validBody,
-			file: cvFile,
-		} as unknown as Request;
+		const req = requestWith(validBody);
 		const redirect = vi.fn();
 		const res = { redirect } as unknown as Response;
 		const next = vi.fn() as NextFunction;
@@ -33,12 +34,8 @@ describe("validateApplication", () => {
 		expect(req.body).toEqual({ ...validBody, linkedInUrl: undefined });
 	});
 
-	it("redirects back with an error and preserved input when the name is missing", () => {
-		const req = {
-			params: { id: "1" },
-			body: { ...validBody, applicantName: "" },
-			file: cvFile,
-		} as unknown as Request;
+	it("redirects back with field errors and preserved input in the session", () => {
+		const req = requestWith({ ...validBody, applicantName: "" });
 		const redirect = vi.fn();
 		const res = { redirect } as unknown as Response;
 		const next = vi.fn() as NextFunction;
@@ -46,20 +43,17 @@ describe("validateApplication", () => {
 		validateApplication(req, res, next);
 
 		expect(next).not.toHaveBeenCalled();
-		expect(redirect).toHaveBeenCalledWith(
-			expect.stringContaining("/job-roles/1/apply?"),
-		);
-		const redirectUrl = redirect.mock.calls[0][0] as string;
-		expect(redirectUrl).toContain("applyError=Enter+your+full+name");
-		expect(redirectUrl).toContain("applicantEmail=jane%40example.com");
+		expect(redirect).toHaveBeenCalledWith("/job-roles/1/apply");
+		expect((req.session as ApplicationSession).applicationErrors).toEqual({
+			applicantName: "Enter your full name",
+		});
+		expect(
+			(req.session as ApplicationSession).applicationValues?.applicantEmail,
+		).toBe("jane@example.com");
 	});
 
 	it("redirects back with an error when the email is invalid", () => {
-		const req = {
-			params: { id: "1" },
-			body: { ...validBody, applicantEmail: "not-an-email" },
-			file: cvFile,
-		} as unknown as Request;
+		const req = requestWith({ ...validBody, applicantEmail: "not-an-email" });
 		const redirect = vi.fn();
 		const res = { redirect } as unknown as Response;
 		const next = vi.fn() as NextFunction;
@@ -67,17 +61,15 @@ describe("validateApplication", () => {
 		validateApplication(req, res, next);
 
 		expect(next).not.toHaveBeenCalled();
-		const redirectUrl = redirect.mock.calls[0][0] as string;
-		expect(redirectUrl).toContain("applyError=Enter+a+valid+email+address");
-		expect(redirectUrl).toContain("applicantName=Jane+Doe");
+		expect(redirect).toHaveBeenCalledWith("/job-roles/1/apply");
+		expect((req.session as ApplicationSession).applicationErrors).toEqual({
+			applicantEmail:
+				"Enter an email address in the correct format, like name@example.com",
+		});
 	});
 
 	it("redirects back with an error when a required field is missing", () => {
-		const req = {
-			params: { id: "1" },
-			body: { ...validBody, phoneNumber: "" },
-			file: cvFile,
-		} as unknown as Request;
+		const req = requestWith({ ...validBody, phoneNumber: "" });
 		const redirect = vi.fn();
 		const res = { redirect } as unknown as Response;
 		const next = vi.fn() as NextFunction;
@@ -85,15 +77,48 @@ describe("validateApplication", () => {
 		validateApplication(req, res, next);
 
 		expect(next).not.toHaveBeenCalled();
-		const redirectUrl = redirect.mock.calls[0][0] as string;
-		expect(redirectUrl).toContain("applyError=Enter+your+phone+number");
+		expect(redirect).toHaveBeenCalledWith("/job-roles/1/apply");
+		expect((req.session as ApplicationSession).applicationErrors).toEqual({
+			phoneNumber: "Enter your phone number",
+		});
 	});
 
-	it("accepts submission with no CV file attached", () => {
-		const req = {
-			params: { id: "1" },
-			body: validBody,
-		} as unknown as Request;
+	it("redirects back with an error when the phone format is invalid", () => {
+		const req = requestWith({ ...validBody, phoneNumber: "not-a-phone" });
+		const redirect = vi.fn();
+		const res = { redirect } as unknown as Response;
+		const next = vi.fn() as NextFunction;
+
+		validateApplication(req, res, next);
+
+		expect(next).not.toHaveBeenCalled();
+		expect((req.session as ApplicationSession).applicationErrors).toEqual({
+			phoneNumber:
+				"Enter a telephone number, like 07700 900123 or +44 808 157 0192",
+		});
+	});
+
+	it("trims the name and lowercases the email", () => {
+		const req = requestWith({
+			...validBody,
+			applicantName: " Jane Doe ",
+			applicantEmail: "JANE@EXAMPLE.COM",
+		});
+		const next = vi.fn() as NextFunction;
+
+		validateApplication(
+			req,
+			{ redirect: vi.fn() } as unknown as Response,
+			next,
+		);
+
+		expect(next).toHaveBeenCalledTimes(1);
+		expect(req.body.applicantName).toBe("Jane Doe");
+		expect(req.body.applicantEmail).toBe("jane@example.com");
+	});
+
+	it("accepts submission without an upload", () => {
+		const req = requestWith(validBody);
 		const redirect = vi.fn();
 		const res = { redirect } as unknown as Response;
 		const next = vi.fn() as NextFunction;
@@ -104,35 +129,11 @@ describe("validateApplication", () => {
 		expect(redirect).not.toHaveBeenCalled();
 	});
 
-	it("redirects back with an error when the CV file's content does not match its claimed type", () => {
-		const req = {
-			params: { id: "1" },
-			body: validBody,
-			file: {
-				originalname: "cv.pdf",
-				mimetype: "application/pdf",
-				buffer: Buffer.from("not actually a pdf"),
-			} as Express.Multer.File,
-		} as unknown as Request;
-		const redirect = vi.fn();
-		const res = { redirect } as unknown as Response;
-		const next = vi.fn() as NextFunction;
-
-		validateApplication(req, res, next);
-
-		expect(next).not.toHaveBeenCalled();
-		const redirectUrl = redirect.mock.calls[0][0] as string;
-		expect(redirectUrl).toContain(
-			"applyError=That+file+does+not+look+like+a+valid+PDF+or+Word+document",
-		);
-	});
-
 	it("accepts an optional linkedInUrl when provided", () => {
-		const req = {
-			params: { id: "1" },
-			body: { ...validBody, linkedInUrl: "https://linkedin.com/in/jane" },
-			file: cvFile,
-		} as unknown as Request;
+		const req = requestWith({
+			...validBody,
+			linkedInUrl: "https://linkedin.com/in/jane",
+		});
 		const redirect = vi.fn();
 		const res = { redirect } as unknown as Response;
 		const next = vi.fn() as NextFunction;
@@ -141,5 +142,42 @@ describe("validateApplication", () => {
 
 		expect(next).toHaveBeenCalledTimes(1);
 		expect(req.body.linkedInUrl).toBe("https://linkedin.com/in/jane");
+	});
+
+	it("adds https to a LinkedIn URL without a protocol", () => {
+		const req = requestWith({
+			...validBody,
+			linkedInUrl: "www.linkedin.com/in/jane",
+		});
+		const next = vi.fn() as NextFunction;
+
+		validateApplication(
+			req,
+			{ redirect: vi.fn() } as unknown as Response,
+			next,
+		);
+
+		expect(next).toHaveBeenCalledTimes(1);
+		expect(req.body.linkedInUrl).toBe("https://www.linkedin.com/in/jane");
+	});
+
+	it("rejects a non-LinkedIn URL", () => {
+		const req = requestWith({
+			...validBody,
+			linkedInUrl: "https://example.com/profile",
+		});
+		const next = vi.fn() as NextFunction;
+
+		validateApplication(
+			req,
+			{ redirect: vi.fn() } as unknown as Response,
+			next,
+		);
+
+		expect(next).not.toHaveBeenCalled();
+		expect((req.session as ApplicationSession).applicationErrors).toEqual({
+			linkedInUrl:
+				"Enter a LinkedIn profile URL, like https://www.linkedin.com/in/your-name",
+		});
 	});
 });

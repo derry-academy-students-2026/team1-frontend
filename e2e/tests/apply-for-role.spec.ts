@@ -40,6 +40,10 @@ test.describe("Apply for role", () => {
 		const applyPage = new ApplyForRolePage(page);
 		await expect(applyPage.applicantNameInput).toBeVisible();
 		await expect(applyPage.applicantEmailInput).toBeVisible();
+		await expect(applyPage.privacyPolicyLink).toHaveAttribute(
+			"href",
+			"https://www.kainos.com/information/privacy-notice",
+		);
 	});
 
 	// AC2 (validation path): invalid input is rejected and the form re-shows the error with input preserved.
@@ -53,8 +57,11 @@ test.describe("Apply for role", () => {
 			await applyPage.submitApplication("Jane Doe", "not-an-email");
 		});
 
-		await expect(page).toHaveURL(/applyError=/);
-		await expect(applyPage.errorMessage).toBeVisible();
+		await expect(page).toHaveURL(`/job-roles/${primaryOpenJobRole.id}/apply`);
+		await expect(applyPage.emailErrorMessage).toBeVisible();
+		await expect(applyPage.emailErrorMessage).toHaveText(
+			"Enter a valid email address",
+		);
 		await expect(applyPage.applicantNameInput).toHaveValue("Jane Doe");
 	});
 
@@ -69,7 +76,7 @@ test.describe("Apply for role", () => {
 
 		await applyPage.submitApplication("Jane Doe", "jane.doe@example.com");
 
-		await expect(page).toHaveURL(/applySuccess=1/);
+		await expect(page).toHaveURL(/\/apply\/confirmation$/);
 		const detailPage = new JobRoleDetailPage(page);
 		await expect(detailPage.applySuccessMessage).toBeVisible();
 	});

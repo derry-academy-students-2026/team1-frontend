@@ -14,7 +14,9 @@ describe("ApplicationApiService", () => {
 		phoneNumber: "07123456789",
 		address: "1 Test Street, Derry",
 		coverLetter: "I would like to apply for this role.",
-	};
+		rightToWork: "yes",
+		privacyConsent: "on",
+	} as const;
 
 	beforeEach(() => {
 		vi.clearAllMocks();

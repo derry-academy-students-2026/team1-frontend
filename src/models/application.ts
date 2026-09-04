@@ -5,6 +5,8 @@ export interface ApplicationRequest {
 	address: string;
 	linkedInUrl?: string;
 	coverLetter: string;
+	rightToWork: "yes" | "no";
+	privacyConsent: "on";
 }
 
 export interface Application {
@@ -16,6 +18,8 @@ export interface Application {
 	address: string;
 	linkedInUrl?: string;
 	coverLetter: string;
+	rightToWork: "yes" | "no";
+	privacyConsent: "on";
 	status: string;
 	createdAt: Date;
 }

@@ -37,7 +37,6 @@
 		"express": "^5.2.1",
 		"express-session": "^1.19.0",
 		"morgan": "^1.11.0",
-		"multer": "^2.3.0",
 		"nunjucks": "^3.2.4",
 		"winston": "^3.19.0",
 		"zod": "^4.4.3"
@@ -49,7 +48,6 @@
 		"@types/express": "^5.0.6",
 		"@types/express-session": "^1.19.0",
 		"@types/morgan": "^1.9.10",
-		"@types/multer": "^2.2.0",
 		"@types/node": "^26.1.2",
 		"@types/nunjucks": "^3.2.6",
 		"@types/supertest": "^7.2.1",

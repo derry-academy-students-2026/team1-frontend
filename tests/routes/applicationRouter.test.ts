@@ -56,6 +56,16 @@ const validApplication = {
 	phoneNumber: "07123456789",
 	address: "1 Test Street, Derry",
 	coverLetter: "I would like to apply for this role.",
+	rightToWork: "yes",
+	privacyConsent: "on",
+} as const;
+
+const validApplicationResponse = {
+	id: 1,
+	roleId: 1,
+	...validApplication,
+	status: "in progress",
+	createdAt: new Date("2026-09-03"),
 };
 
 describe("GET /job-roles/:id/apply", () => {
@@ -98,13 +108,9 @@ describe("POST /job-roles/:id/apply", () => {
 	});
 
 	it("submits the application and redirects with a success flash", async () => {
-		vi.mocked(applicationApiService.applyForJobRole).mockResolvedValue({
-			id: 1,
-			roleId: 1,
-			...validApplication,
-			status: "in progress",
-			createdAt: new Date("2026-09-03"),
-		});
+		vi.mocked(applicationApiService.applyForJobRole).mockResolvedValue(
+			validApplicationResponse,
+		);
 
 		const response = await (await signedInAgent())
 			.post("/job-roles/1/apply")
@@ -112,7 +118,7 @@ describe("POST /job-roles/:id/apply", () => {
 			.send(validApplication);
 
 		expect(response.status).toBe(302);
-		expect(response.headers.location).toBe("/job-roles/1?applySuccess=1");
+		expect(response.headers.location).toBe("/job-roles/1/apply/confirmation");
 		expect(applicationApiService.applyForJobRole).toHaveBeenCalledWith(
 			1,
 			expect.objectContaining({ applicantEmail: "jane@example.com" }),
@@ -127,9 +133,7 @@ describe("POST /job-roles/:id/apply", () => {
 			.send({ ...validApplication, applicantEmail: "not-an-email" });
 
 		expect(response.status).toBe(302);
-		expect(response.headers.location).toContain(
-			"/job-roles/1/apply?applyError=",
-		);
+		expect(response.headers.location).toBe("/job-roles/1/apply");
 		expect(applicationApiService.applyForJobRole).not.toHaveBeenCalled();
 	});
 

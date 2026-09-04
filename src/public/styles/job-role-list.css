@@ -674,7 +674,7 @@ input:focus-visible {
 }
 
 .form-group {
-	margin-bottom: 1.35rem;
+	margin-bottom: 1.5rem;
 }
 
 .form-group label {
@@ -686,6 +686,14 @@ input:focus-visible {
 
 .apply-card {
 	max-width: 40rem;
+	margin-inline: auto;
+	width: 100%;
+}
+
+.apply-card form,
+.apply-card .form-group,
+.apply-card fieldset {
+	min-width: 0;
 }
 
 .form-hint {
@@ -703,6 +711,7 @@ input:focus-visible {
 	font-size: 1rem;
 	min-height: 44px;
 	padding: 0.7rem 0.9rem;
+	max-width: 100%;
 	width: 100%;
 }
 
@@ -714,24 +723,95 @@ input:focus-visible {
 	font-size: 1rem;
 	padding: 0.7rem 0.9rem;
 	resize: vertical;
-	width: 100%;
-}
-
-.form-group input[type="file"] {
-	border: 1px solid var(--border);
-	border-radius: var(--radius-sm);
-	box-sizing: border-box;
-	font-family: inherit;
-	font-size: 0.95rem;
-	min-height: 44px;
-	padding: 0.55rem 0.7rem;
+	max-width: 100%;
 	width: 100%;
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group input[type="radio"]:focus,
+.form-group input[type="checkbox"]:focus {
 	border-color: var(--kainos-bright-blue);
 	box-shadow: 0 0 0 3px rgb(0 159 218 / 22%);
+}
+
+.field-error {
+	color: #b3261e;
+	font-weight: 700;
+	margin: 0.35rem 0 0;
+}
+
+.choice-group {
+	border: 0;
+	margin: 0;
+	max-width: 100%;
+	padding: 0;
+}
+
+.choice-group legend {
+	color: var(--kainos-blue);
+	font-weight: 700;
+	margin-bottom: 0.5rem;
+}
+
+.choice-options {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem 1.5rem;
+	margin-top: 0.25rem;
+}
+
+.choice-option,
+.form-checkbox label {
+	align-items: flex-start;
+	color: var(--kainos-grey);
+	display: flex;
+	font-weight: 400;
+	gap: 0.5rem;
+	justify-content: flex-start;
+	min-width: 0;
+	text-align: left;
+}
+
+.choice-option {
+	align-items: center;
+	margin: 0;
+}
+
+.form-checkbox label {
+	align-items: flex-start;
+	background: var(--surface-soft);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	box-sizing: border-box;
+	padding: 0.85rem 1rem;
+	margin: 0;
+	width: 100%;
+}
+
+.form-checkbox span {
+	display: block;
+	flex: 1 1 auto;
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.choice-group input[type="radio"],
+.form-checkbox input[type="checkbox"] {
+	accent-color: var(--kainos-blue);
+	flex: 0 0 auto;
+	height: 1.1rem;
+	margin-left: 0;
+	margin-top: 0;
+	min-height: 1.1rem;
+	padding: 0;
+	width: 1.1rem;
+}
+
+.form-checkbox a {
+	color: var(--kainos-blue);
+	font-weight: 700;
+	text-decoration: underline;
 }
 
 .form-error {
@@ -758,6 +838,15 @@ input:focus-visible {
 
 .apply-form {
 	margin-top: 1.5rem;
+}
+
+.confirmation-card {
+	text-align: center;
+}
+
+.confirmation-card .button {
+	display: inline-flex;
+	margin-top: 0.75rem;
 }
 
 .job-role-detail__apply {
@@ -890,6 +979,10 @@ footer.site-footer a {
 
 	.page-content {
 		padding: 0 1rem;
+	}
+
+	.apply-card {
+		padding: 1.25rem 1rem;
 	}
 
 	.site-header__inner {
