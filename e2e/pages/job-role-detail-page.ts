@@ -14,6 +14,7 @@ export class JobRoleDetailPage extends BasePage {
 	readonly jobSpecificationLink: Locator;
 	readonly applyButton: Locator;
 	readonly applySuccessMessage: Locator;
+	readonly alreadyAppliedMessage: Locator;
 
 	constructor(page: Page) {
 		super(page);
@@ -34,6 +35,7 @@ export class JobRoleDetailPage extends BasePage {
 		});
 		this.applyButton = page.getByTestId("apply-button");
 		this.applySuccessMessage = page.getByRole("status");
+		this.alreadyAppliedMessage = page.getByTestId("already-applied");
 	}
 
 	async goto(id: number) {

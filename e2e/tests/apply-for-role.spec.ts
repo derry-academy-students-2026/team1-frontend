@@ -2,9 +2,12 @@ import { expect, test } from "../fixtures/authenticated-test";
 import {
 	primaryClosedJobRole,
 	primaryOpenJobRole,
+	secondaryOpenJobRole,
+	testUser,
 } from "../fixtures/test-data";
 import { ApplyForRolePage } from "../pages/apply-for-role-page";
 import { JobRoleDetailPage } from "../pages/job-role-detail-page";
+import { LoginPage } from "../pages/login-page";
 
 test.describe("Apply for role", () => {
 	// AC1 (happy path): button shown when open positions > 0 and status is "open".
@@ -79,5 +82,28 @@ test.describe("Apply for role", () => {
 		await expect(page).toHaveURL(/\/apply\/confirmation$/);
 		const detailPage = new JobRoleDetailPage(page);
 		await expect(detailPage.applySuccessMessage).toBeVisible();
+	});
+
+	// Safety net for the apply/logout/login edge case: the "already applied" state
+	// must survive a fresh session (backend GET /job-roles/:id/application-status),
+	// not just the in-session appliedJobRoleIds flash.
+	test("@regression shows the already-applied state after logging out and back in", async ({
+		page,
+	}) => {
+		const applyPage = new ApplyForRolePage(page);
+		await applyPage.goto(secondaryOpenJobRole.id);
+		await applyPage.submitApplication("Jane Doe", "jane.doe@example.com");
+
+		const detailPage = new JobRoleDetailPage(page);
+		await detailPage.signOutFromHeader();
+
+		const loginPage = new LoginPage(page);
+		await loginPage.goto();
+		await loginPage.login(testUser.email, testUser.password);
+
+		await detailPage.goto(secondaryOpenJobRole.id);
+
+		await expect(detailPage.alreadyAppliedMessage).toBeVisible();
+		await expect(detailPage.applyButton).toBeHidden();
 	});
 });

@@ -91,7 +91,7 @@ export class JobRoleController {
 					}),
 				},
 				applySuccess: req.query?.applySuccess === "1",
-				hasApplied: (req.session?.appliedJobRoleIds ?? []).includes(id),
+				hasApplied: await this.hasAppliedForRole(id, req),
 			});
 		} catch (error) {
 			const status = (error as { response?: { status?: number } }).response
@@ -112,6 +112,27 @@ export class JobRoleController {
 
 			Logger.error(`Failed to load job role ${id}: ${message}`);
 			res.status(500).send("Unable to load job role");
+		}
+	}
+
+	/**
+	 * Asks the backend whether the current user has already applied for the role.
+	 * Falls back to the session's applied-role list if the backend check fails,
+	 * so a transient error doesn't block rendering the page.
+	 */
+	private async hasAppliedForRole(id: number, req: Request): Promise<boolean> {
+		try {
+			const { hasApplied } = await this.jobApiRoleService.getApplicationStatus(
+				id,
+				req.session?.jwtToken,
+			);
+			return hasApplied;
+		} catch (error) {
+			const message = error instanceof Error ? error.message : "Unknown error";
+			Logger.warn(
+				`Falling back to session-based applied check for job role ${id}: ${message}`,
+			);
+			return (req.session?.appliedJobRoleIds ?? []).includes(id);
 		}
 	}
 }

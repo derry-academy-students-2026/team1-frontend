@@ -60,3 +60,25 @@ export async function getJobRoleById(
 		throw error;
 	}
 }
+
+/** Checks whether the signed-in user has already applied for the given role. */
+export async function getApplicationStatus(
+	id: number,
+	token?: string,
+): Promise<{ hasApplied: boolean }> {
+	try {
+		const response = await apiClient.get<{ hasApplied: boolean }>(
+			`/job-roles/${id}/application-status`,
+			authConfig(token),
+		);
+		return response.data;
+	} catch (error) {
+		if (axios.isAxiosError(error)) {
+			logger.error(
+				`Failed to fetch application status for job role ${id}: ${error.message}`,
+			);
+			throw error;
+		}
+		throw error;
+	}
+}

@@ -152,6 +152,9 @@ describe("JobRoleController", () => {
 			numberOfOpenPositions: 2,
 		};
 		vi.mocked(jobRoleApiService.getJobRoleById).mockResolvedValue(jobRole);
+		vi.mocked(jobRoleApiService.getApplicationStatus).mockResolvedValue({
+			hasApplied: false,
+		});
 
 		const controller = new JobRoleController();
 		const render = vi.fn();
@@ -169,6 +172,10 @@ describe("JobRoleController", () => {
 			1,
 			"test-token",
 		);
+		expect(jobRoleApiService.getApplicationStatus).toHaveBeenCalledWith(
+			1,
+			"test-token",
+		);
 		expect(render).toHaveBeenCalledWith("job-role-information.njk", {
 			jobRole: { ...jobRole, closingDate: "30/8/2026" },
 			applySuccess: false,
@@ -176,7 +183,7 @@ describe("JobRoleController", () => {
 		});
 	});
 
-	it("marks hasApplied as true when the role id is in the session's applied list", async () => {
+	it("marks hasApplied as true when the backend reports an existing application", async () => {
 		const jobRole = {
 			id: 1,
 			roleName: "Software Engineer",
@@ -191,6 +198,47 @@ describe("JobRoleController", () => {
 			numberOfOpenPositions: 2,
 		};
 		vi.mocked(jobRoleApiService.getJobRoleById).mockResolvedValue(jobRole);
+		vi.mocked(jobRoleApiService.getApplicationStatus).mockResolvedValue({
+			hasApplied: true,
+		});
+
+		const controller = new JobRoleController();
+		const render = vi.fn();
+		const response = { render } as unknown as Response;
+
+		await controller.getJobRole(
+			{
+				params: { id: "1" },
+				session: { jwtToken: "test-token" },
+			} as unknown as Request,
+			response,
+		);
+
+		expect(render).toHaveBeenCalledWith("job-role-information.njk", {
+			jobRole: { ...jobRole, closingDate: "30/8/2026" },
+			applySuccess: false,
+			hasApplied: true,
+		});
+	});
+
+	it("falls back to the session's applied list when the application-status check fails", async () => {
+		const jobRole = {
+			id: 1,
+			roleName: "Software Engineer",
+			description: "Build software products.",
+			responsibilities: "Design, build and test software.",
+			sharepointUrl: "https://sharepoint.example.com/software-engineer",
+			location: "Belfast",
+			capability: { id: 1, name: "Engineering" },
+			band: { id: 2, name: "Band 2" },
+			closingDate: new Date("2026-08-30"),
+			status: { id: 1, name: "open" },
+			numberOfOpenPositions: 2,
+		};
+		vi.mocked(jobRoleApiService.getJobRoleById).mockResolvedValue(jobRole);
+		vi.mocked(jobRoleApiService.getApplicationStatus).mockRejectedValue(
+			new Error("network error"),
+		);
 
 		const controller = new JobRoleController();
 		const render = vi.fn();
