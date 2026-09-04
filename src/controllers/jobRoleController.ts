@@ -91,6 +91,7 @@ export class JobRoleController {
 					}),
 				},
 				applySuccess: req.query?.applySuccess === "1",
+				hasApplied: (req.session?.appliedJobRoleIds ?? []).includes(id),
 			});
 		} catch (error) {
 			const status = (error as { response?: { status?: number } }).response

@@ -172,6 +172,42 @@ describe("JobRoleController", () => {
 		expect(render).toHaveBeenCalledWith("job-role-information.njk", {
 			jobRole: { ...jobRole, closingDate: "30/8/2026" },
 			applySuccess: false,
+			hasApplied: false,
+		});
+	});
+
+	it("marks hasApplied as true when the role id is in the session's applied list", async () => {
+		const jobRole = {
+			id: 1,
+			roleName: "Software Engineer",
+			description: "Build software products.",
+			responsibilities: "Design, build and test software.",
+			sharepointUrl: "https://sharepoint.example.com/software-engineer",
+			location: "Belfast",
+			capability: { id: 1, name: "Engineering" },
+			band: { id: 2, name: "Band 2" },
+			closingDate: new Date("2026-08-30"),
+			status: { id: 1, name: "open" },
+			numberOfOpenPositions: 2,
+		};
+		vi.mocked(jobRoleApiService.getJobRoleById).mockResolvedValue(jobRole);
+
+		const controller = new JobRoleController();
+		const render = vi.fn();
+		const response = { render } as unknown as Response;
+
+		await controller.getJobRole(
+			{
+				params: { id: "1" },
+				session: { jwtToken: "test-token", appliedJobRoleIds: [1] },
+			} as unknown as Request,
+			response,
+		);
+
+		expect(render).toHaveBeenCalledWith("job-role-information.njk", {
+			jobRole: { ...jobRole, closingDate: "30/8/2026" },
+			applySuccess: false,
+			hasApplied: true,
 		});
 	});
 

@@ -111,6 +111,11 @@ export class ApplicationController {
 				},
 				req.session?.jwtToken,
 			);
+
+			req.session.appliedJobRoleIds = [
+				...new Set([...(req.session.appliedJobRoleIds ?? []), id]),
+			];
+
 			res.redirect(`/job-roles/${id}/apply/confirmation`);
 		} catch (error) {
 			const status = (error as { response?: { status?: number } }).response

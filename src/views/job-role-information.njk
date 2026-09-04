@@ -71,6 +71,10 @@
 				{% set canApply = jobRole.numberOfOpenPositions > 0 and (jobRole.status.name | lower) == "open" %}
 				{% if applySuccess %}
 					<p class="form-success" role="status">Your application has been submitted.</p>
+				{% elif hasApplied %}
+					<p class="job-role-detail__apply">
+						<span class="button button--disabled" data-testid="already-applied" aria-disabled="true">You have already applied for this role</span>
+					</p>
 				{% elif canApply %}
 					<p class="job-role-detail__apply">
 						<a class="button button--submit" href="/job-roles/{{ jobRole.id }}/apply" data-testid="apply-button">Apply for role</a>

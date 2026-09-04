@@ -5,5 +5,6 @@ declare module "express-session" {
 		jwtToken?: string;
 		applicationErrors?: Record<string, string>;
 		applicationValues?: Record<string, string>;
+		appliedJobRoleIds?: number[];
 	}
 }

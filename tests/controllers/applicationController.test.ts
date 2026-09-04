@@ -27,7 +27,7 @@ describe("ApplicationController", () => {
 	});
 
 	describe("applyForRole", () => {
-		it("submits the application and redirects with a success flash", async () => {
+		it("submits the application, records the applied role and redirects with a success flash", async () => {
 			vi.mocked(applicationApiService.applyForJobRole).mockResolvedValue({
 				id: 1,
 				roleId: 1,
@@ -45,6 +45,9 @@ describe("ApplicationController", () => {
 			const controller = new ApplicationController();
 			const redirect = vi.fn();
 			const response = { redirect } as unknown as Response;
+			const session: { jwtToken: string; appliedJobRoleIds?: number[] } = {
+				jwtToken: "test-token",
+			};
 
 			await controller.applyForRole(
 				{
@@ -58,7 +61,7 @@ describe("ApplicationController", () => {
 						rightToWork: "yes",
 						privacyConsent: "on",
 					},
-					session: { jwtToken: "test-token" },
+					session,
 				} as unknown as Request,
 				response,
 			);
@@ -77,6 +80,7 @@ describe("ApplicationController", () => {
 				},
 				"test-token",
 			);
+			expect(session.appliedJobRoleIds).toEqual([1]);
 			expect(redirect).toHaveBeenCalledWith("/job-roles/1/apply/confirmation");
 		});
 

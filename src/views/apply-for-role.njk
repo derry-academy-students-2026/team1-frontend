@@ -110,6 +110,20 @@
 			}
 		};
 
+		const setFieldsetError = (existingError, message) => {
+			let error = existingError;
+			if (message && !error) {
+				error = document.createElement("p");
+				error.className = "field-error";
+				error.id = "rightToWork-error";
+				document.querySelector(".choice-group")?.append(error);
+			}
+			if (error) {
+				error.textContent = message;
+				error.hidden = !message;
+			}
+		};
+
 		const validateEmail = () => {
 			const field = document.querySelector("#applicantEmail");
 			const value = field.value.trim();
@@ -138,11 +152,15 @@
 			const nameValid = Boolean(name);
 			const addressValid = Boolean(address);
 			const coverLetterValid = Boolean(coverLetter);
+			const rightToWorkValid = Boolean(document.querySelector("input[name='rightToWork']:checked"));
+			const privacyConsentValid = document.querySelector("#privacyConsent").checked;
 			setFieldError(document.querySelector("#applicantName"), nameValid ? "" : "Enter your full name");
 			setFieldError(document.querySelector("#address"), addressValid ? "" : "Enter your home address");
 			setFieldError(document.querySelector("#coverLetter"), coverLetterValid ? "" : "Enter a cover letter or additional information");
+			setFieldsetError(document.querySelector("#rightToWork-error"), rightToWorkValid ? "" : "Select whether you have the right to work in the UK/Ireland");
+			setFieldError(document.querySelector("#privacyConsent"), privacyConsentValid ? "" : "Consent is required to submit your application");
 
-			if (!nameValid || !validateEmail() || !validatePhone() || !addressValid || !coverLetterValid || !document.querySelector("input[name='rightToWork']:checked") || !document.querySelector("#privacyConsent").checked) {
+			if (!nameValid || !validateEmail() || !validatePhone() || !addressValid || !coverLetterValid || !rightToWorkValid || !privacyConsentValid) {
 				event.preventDefault();
 			}
 		});

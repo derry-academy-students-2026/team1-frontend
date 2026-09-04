@@ -643,6 +643,13 @@ input:focus-visible {
 	border-color: var(--kainos-mid-blue);
 }
 
+.button--disabled {
+	background: #e5e5e5;
+	border-color: #e5e5e5;
+	color: #6b6b6b;
+	cursor: not-allowed;
+}
+
 .login-card {
 	margin: 0 auto;
 	max-width: 34rem;
