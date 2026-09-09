@@ -49,6 +49,8 @@ jobs:
   push-acr:
     name: Push image to ACR
     needs: build
+    # Azure deployment paused while we build out the app locally; flip to re-enable.
+    if: false
     runs-on: ubuntu-latest
     env:
       ACR_LOGIN_SERVER: acraiacademy26.azurecr.io

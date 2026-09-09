@@ -1,14 +1,8 @@
 import axios from "axios";
 import apiClient from "../config/apiClient.js";
+import { authConfig } from "../lib/authConfig.js";
 import logger from "../lib/logger.js";
 import type { JobRole } from "../models/jobRole.js";
-
-/**
- * Builds the request config carrying the caller's bearer token, if any.
- */
-function authConfig(token?: string) {
-	return token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
-}
 
 /**
  * Fetches all job roles from the backend Prisma API.
@@ -61,6 +55,28 @@ export async function getJobRoleById(
 			} else {
 				logger.error(`Unexpected error: ${error.message}`);
 			}
+			throw error;
+		}
+		throw error;
+	}
+}
+
+/** Checks whether the signed-in user has already applied for the given role. */
+export async function getApplicationStatus(
+	id: number,
+	token?: string,
+): Promise<{ hasApplied: boolean }> {
+	try {
+		const response = await apiClient.get<{ hasApplied: boolean }>(
+			`/job-roles/${id}/application-status`,
+			authConfig(token),
+		);
+		return response.data;
+	} catch (error) {
+		if (axios.isAxiosError(error)) {
+			logger.error(
+				`Failed to fetch application status for job role ${id}: ${error.message}`,
+			);
 			throw error;
 		}
 		throw error;

@@ -7,6 +7,7 @@ import nunjucks from "nunjucks";
 import { isRegistrationEnabled } from "./config/features.js";
 import morganMiddleware from "./config/morganMiddleware.js";
 import Logger from "./lib/logger.js";
+import applicationRouter from "./routes/applicationRouter.js";
 import authRouter from "./routes/authRouter.js";
 import jobRoleRouter from "./routes/jobRoleRouter.js";
 
@@ -84,6 +85,10 @@ app.get("/health", (_req, res) => {
 // Route requests through jobRoleRouter.
 app.use("/", jobRoleRouter);
 Logger.info("Job routes mounted at /");
+
+// Route requests through applicationRouter.
+app.use("/", applicationRouter);
+Logger.info("Application routes mounted at /");
 
 // Route requests through authRouter.
 app.use("/", authRouter);

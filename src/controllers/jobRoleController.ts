@@ -14,6 +14,7 @@ export class JobRoleController {
 	 * @param jobApiRoleService - Service instance for fetching job roles (injectable for testing)
 	 */
 	constructor(private readonly jobApiRoleService = jobRoleApiService) {}
+
 	/**
 	 * Handles GET /job-roles by retrieving roles from the service
 	 * and rendering the job roles list page with formatted dates.
@@ -70,11 +71,6 @@ export class JobRoleController {
 	async getJobRole(req: Request, res: Response) {
 		const id = Number(req.params.id);
 
-		if (!Number.isInteger(id) || id <= 0) {
-			res.status(404).send("Job role not found");
-			return;
-		}
-
 		try {
 			const jobRole = await this.jobApiRoleService.getJobRoleById(
 				id,
@@ -94,6 +90,8 @@ export class JobRoleController {
 						year: "numeric",
 					}),
 				},
+				applySuccess: req.query?.applySuccess === "1",
+				hasApplied: await this.hasAppliedForRole(id, req),
 			});
 		} catch (error) {
 			const status = (error as { response?: { status?: number } }).response
@@ -114,6 +112,27 @@ export class JobRoleController {
 
 			Logger.error(`Failed to load job role ${id}: ${message}`);
 			res.status(500).send("Unable to load job role");
+		}
+	}
+
+	/**
+	 * Asks the backend whether the current user has already applied for the role.
+	 * Falls back to the session's applied-role list if the backend check fails,
+	 * so a transient error doesn't block rendering the page.
+	 */
+	private async hasAppliedForRole(id: number, req: Request): Promise<boolean> {
+		try {
+			const { hasApplied } = await this.jobApiRoleService.getApplicationStatus(
+				id,
+				req.session?.jwtToken,
+			);
+			return hasApplied;
+		} catch (error) {
+			const message = error instanceof Error ? error.message : "Unknown error";
+			Logger.warn(
+				`Falling back to session-based applied check for job role ${id}: ${message}`,
+			);
+			return (req.session?.appliedJobRoleIds ?? []).includes(id);
 		}
 	}
 }

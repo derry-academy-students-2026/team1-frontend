@@ -1,0 +1,31 @@
+{% extends "base.njk" %}
+
+{% block title %}Application received | Kainos careers{% endblock %}
+
+{% block bodyClass %}page-job-roles{% endblock %}
+
+{% block eyebrow %}Application received{% endblock %}
+
+{% block hero %}
+	<h1>Application received</h1>
+	<p class="hero__subtitle">Thank you for applying for {{ jobRole.roleName }}.</p>
+{% endblock %}
+
+{% block content %}
+	<div class="page-content">
+		<nav class="breadcrumb" aria-label="Breadcrumb">
+			<ol class="breadcrumb__list">
+				<li><a href="/job-roles">Job roles</a></li>
+				<li><a href="/job-roles/{{ jobRole.id }}">{{ jobRole.roleName }}</a></li>
+				<li aria-current="page">Application received</li>
+			</ol>
+		</nav>
+
+		<section class="card login-card confirmation-card" aria-labelledby="confirmation-heading">
+			<h2 id="confirmation-heading">Thank you</h2>
+			<p class="form-success" role="status">Your application for {{ jobRole.roleName }} has been received.</p>
+			<p>We will review your application and contact you if you are shortlisted.</p>
+			<a class="button button--submit" href="/job-roles">Back to job roles</a>
+		</section>
+	</div>
+{% endblock %}
